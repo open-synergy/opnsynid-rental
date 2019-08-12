@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 OpenSynergy Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<openerp>
+<data>
+<record id="rental_property_view_search" model="ir.ui.view">
+    <field name="name">rental.property form</field>
+    <field name="model">rental.property</field>
+    <field name="inherit_id" ref="rental_common.rental_common_view_search"/>
+    <field name="mode">primary</field>
+    <field name="arch" type="xml">
+        <data>
+        </data>
+    </field>
+</record>
+
+<record id="rental_property_view_tree" model="ir.ui.view">
+    <field name="name">rental.property tree</field>
+    <field name="model">rental.property</field>
+    <field name="inherit_id" ref="rental_common.rental_common_view_tree"/>
+    <field name="mode">primary</field>
+    <field name="arch" type="xml">
+        <data/>
+    </field>
+</record>
+
+<record id="rental_property_view_form" model="ir.ui.view">
+    <field name="name">rental.property form</field>
+    <field name="model">rental.property</field>
+    <field name="inherit_id" ref="rental_common.rental_common_view_form"/>
+    <field name="mode">primary</field>
+    <field name="arch" type="xml">
+        <data/>
+    </field>
+</record>
+
+<record id="rental_property_action" model="ir.actions.act_window">
+    <field name="name">Rental Property</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">rental.property</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem
+    id="rental_property_menu"
+    name="Rental Property"
+    parent="rental_common.rental_menu"
+    action="rental_property_action"
+    sequence="3"
+    />
+
+</data>
+</openerp>

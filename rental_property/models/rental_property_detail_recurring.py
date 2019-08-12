@@ -1,0 +1,23 @@
+# -*- coding: utf-8 -*-
+# Copyright 2019 OpenSynergy Indonesia
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+from openerp import models, fields, api
+
+
+class RentalPropertyDetailRecurring(models.Model):
+    _name = "rental.property_detail_recurring"
+    _inherit = [
+        "rental.detail_recurring_common"
+    ]
+    _description = "Rental Property Recurring"
+
+    @api.multi
+    def _compute_rental_state(self):
+        _super = super(RentalPropertyDetailRecurring, self)
+        _super._compute_rental_state()
+
+    detail_id = fields.Many2one(
+        string="Details",
+        comodel_name="rental.property_detail",
+    )

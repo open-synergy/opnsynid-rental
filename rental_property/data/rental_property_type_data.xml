@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- Copyright 2019 OpenSynergy Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0) -->
+<openerp>
+<data>
+
+<record id="rental_property_type" model="rental.type">
+    <field name="name">Property</field>
+    <field name="code">RENT-PRO</field>
+</record>
+
+</data>
+</openerp>
