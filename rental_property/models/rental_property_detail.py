@@ -18,7 +18,7 @@ class RentalPropertyDetail(models.Model):
     )
 
     object_id = fields.Many2one(
-        string="#Property",
+        string="Property",
         comodel_name="property.object",
         required=True,
     )
