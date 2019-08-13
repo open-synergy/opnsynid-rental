@@ -7,8 +7,11 @@ from openerp.exceptions import Warning as UserError
 import openerp.addons.decimal_precision as dp
 
 
+#TODO: RentalRecurringFeeCommon
 class RentalDetailRecurringCommon(models.AbstractModel):
+    #TODO: rental.recurring_fee_common
     _name = "rental.detail_recurring_common"
+    #TODO: Abstract Model for Rental Recurring Fee
     _description = "Abstract Model for Rental Recurring"
 
     detail_id = fields.Many2one(

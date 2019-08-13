@@ -151,6 +151,7 @@ class RentalDetailCommon(models.AbstractModel):
         selection=[
             ("B", "Daily(Business Day)"),
             ("D", "Daily(Calendar Day)"),
+            #TODO: Hapus opsi di bawah
             ("MS", "Monthly(Calendar Month Start)"),
             ("M", "Monthly(Calendar Month End)"),
             ("BMS", "Monthly(Business Month Start)"),
@@ -177,18 +178,23 @@ class RentalDetailCommon(models.AbstractModel):
         inverse_name="detail_id",
     )
 
+    #TODO: recurring_fee_ids
     recurring_ids = fields.One2many(
+        #TODO: Recurring Fees
         string="Recurrings",
+        #rental.recurring_fee_common
         comodel_name="rental.detail_recurring_common",
         inverse_name="detail_id",
     )
 
+    #TODO: Untuk dianalisa lagi penempatan field yg pas
     date_handover = fields.Datetime(
         string="Date Handover",
         required=True,
         ondelete="restrict",
     )
 
+    #TODO: Untuk dianalisa lagi penempatan field yg pas
     fitting_out = fields.Integer(
         string="Fitting Out(Days)",
         default=30,

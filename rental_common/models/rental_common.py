@@ -69,6 +69,12 @@ class RentalCommon(models.AbstractModel):
             ],
         },
     )
+    #TODO: Tambahkan field contact_id
+    #Field ini berguna untuk menampung info penanggung jawab sewa
+
+    #TODO: Tambahkan field mailing_id (m2o res.partner)
+    #Field ini berguna untuk menyimpan data untuk korespondensi
+    
     payment_term_id = fields.Many2one(
         string="Payment Terms",
         comodel_name="account.payment.term",
@@ -254,6 +260,8 @@ class RentalCommon(models.AbstractModel):
         if not self.partner_id:
             self.pricelist_id = False
             return
+        #TODO: Jangan menggunakan field pricelist yg sudah ada
+        #Data pricelist di bawah dikhususkan untuk sale.order saja
         self.pricelist_id = (
             self.partner_id.property_product_pricelist and
             self.partner_id.property_product_pricelist.id or
