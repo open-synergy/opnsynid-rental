@@ -151,17 +151,8 @@ class RentalDetailCommon(models.AbstractModel):
         selection=[
             ("B", "Daily(Business Day)"),
             ("D", "Daily(Calendar Day)"),
-            #TODO: Hapus opsi di bawah
-            ("MS", "Monthly(Calendar Month Start)"),
-            ("M", "Monthly(Calendar Month End)"),
-            ("BMS", "Monthly(Business Month Start)"),
-            ("BM", "Monthly(Business Month End)"),
-            ("YS", "Yearly(Calendar Year Start)"),
-            ("Y", "Yearly(Calendar Year End)"),
-            ("BYS", "Yearly(Business Year Start)"),
-            ("BY", "Yearly(Business Year End)"),
         ],
-        default="M",
+        default="B",
         ondelete="restrict",
         required=True,
     )
@@ -178,12 +169,9 @@ class RentalDetailCommon(models.AbstractModel):
         inverse_name="detail_id",
     )
 
-    #TODO: recurring_fee_ids
-    recurring_ids = fields.One2many(
-        #TODO: Recurring Fees
-        string="Recurrings",
-        #rental.recurring_fee_common
-        comodel_name="rental.detail_recurring_common",
+    recurring_fee_ids = fields.One2many(
+        string="Recurring Fees",
+        comodel_name="rental.recurring_fee_common",
         inverse_name="detail_id",
     )
 

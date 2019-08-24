@@ -5,14 +5,12 @@
 from openerp import models, fields, api, _
 from openerp.exceptions import Warning as UserError
 import openerp.addons.decimal_precision as dp
+from openerp.tools import float_is_zero
 
 
-#TODO: RentalRecurringFeeCommon
-class RentalDetailRecurringCommon(models.AbstractModel):
-    #TODO: rental.recurring_fee_common
-    _name = "rental.detail_recurring_common"
-    #TODO: Abstract Model for Rental Recurring Fee
-    _description = "Abstract Model for Rental Recurring"
+class RentalRecurringFeeCommon(models.AbstractModel):
+    _name = "rental.recurring_fee_common"
+    _description = "Abstract Model for Rental Recurring Fee"
 
     detail_id = fields.Many2one(
         string="Details",
@@ -22,6 +20,7 @@ class RentalDetailRecurringCommon(models.AbstractModel):
     product_id = fields.Many2one(
         string="Product",
         comodel_name="product.product",
+        required=True,
     )
     company_id = fields.Many2one(
         string="Company",
@@ -38,6 +37,21 @@ class RentalDetailRecurringCommon(models.AbstractModel):
         string="Type",
         related="detail_id.rental_id.type_id",
         readonly=True,
+    )
+
+    @api.model
+    def _default_pricelist_id(self):
+        pricelist_id =\
+            self.env.context.get(
+                "pricelist_id", False)
+        if pricelist_id:
+            return pricelist_id
+
+    pricelist_id = fields.Many2one(
+        string="Pricelist",
+        comodel_name="product.pricelist",
+        required=True,
+        default=lambda self: self._default_pricelist_id(),
     )
     payment_term_id = fields.Many2one(
         string="Payment Terms",
@@ -121,16 +135,8 @@ class RentalDetailRecurringCommon(models.AbstractModel):
         selection=[
             ("B", "Daily(Business Day)"),
             ("D", "Daily(Calendar Day)"),
-            ("MS", "Monthly(Calendar Month Start)"),
-            ("M", "Monthly(Calendar Month End)"),
-            ("BMS", "Monthly(Business Month Start)"),
-            ("BM", "Monthly(Business Month End)"),
-            ("YS", "Yearly(Calendar Year Start)"),
-            ("Y", "Yearly(Calendar Year End)"),
-            ("BYS", "Yearly(Business Year Start)"),
-            ("BY", "Yearly(Business Year End)"),
         ],
-        default="M",
+        default="B",
         ondelete="restrict",
         required=True,
     )
@@ -140,3 +146,42 @@ class RentalDetailRecurringCommon(models.AbstractModel):
         required=True,
         ondelete="restrict",
     )
+
+    recurring_fee_schedule_ids = fields.One2many(
+        string="Schedules",
+        comodel_name="rental.recurring_fee_schedule_common",
+        inverse_name="recurring_fee_id",
+    )
+
+    @api.multi
+    @api.onchange(
+        "product_id",
+        "qty",
+    )
+    def onchange_price_unit(self):
+        obj_decimal_precision =\
+            self.env["decimal.precision"]
+        precision =\
+            obj_decimal_precision.precision_get(
+                "Product Unit of Measure")
+        self.price_unit = 0.0
+        product_id = self.product_id
+        if product_id:
+            if float_is_zero(self.price_unit, precision_digits=precision):
+                price = self.pricelist_id.price_get(
+                    prod_id=product_id.id,
+                    qty=self.qty or 1.0
+                )[self.pricelist_id.id]
+                self.price_unit = price
+
+    @api.multi
+    @api.onchange(
+        "product_id",
+    )
+    def onchange_product_uom(self):
+        self.uom_id = False
+        if self.product_id:
+            product_id = self.product_id
+            if product_id:
+                if not self.uom_id:
+                    self.uom_id = product_id.uom_id.id

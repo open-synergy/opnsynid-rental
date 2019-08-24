@@ -29,9 +29,9 @@ class RentalPropertyDetail(models.Model):
         inverse_name="detail_id",
     )
 
-    recurring_ids = fields.One2many(
-        string="Recurrings",
-        comodel_name="rental.property_detail_recurring",
+    recurring_fee_ids = fields.One2many(
+        string="Recurring Fees",
+        comodel_name="rental.property_recurring_fee",
         inverse_name="detail_id",
     )
 

@@ -69,12 +69,30 @@ class RentalCommon(models.AbstractModel):
             ],
         },
     )
-    #TODO: Tambahkan field contact_id
-    #Field ini berguna untuk menampung info penanggung jawab sewa
+    contact_id = fields.Many2one(
+        string="Contact",
+        comodel_name="res.partner",
+        required=True,
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+    )
 
-    #TODO: Tambahkan field mailing_id (m2o res.partner)
-    #Field ini berguna untuk menyimpan data untuk korespondensi
-    
+    mailing_id = fields.Many2one(
+        string="Correspondence",
+        comodel_name="res.partner",
+        required=True,
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+    )
+
     payment_term_id = fields.Many2one(
         string="Payment Terms",
         comodel_name="account.payment.term",

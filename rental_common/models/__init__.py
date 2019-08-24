@@ -8,5 +8,6 @@ from . import (
     rental_detail_common,
     rental_common,
     rental_detail_schedule_common,
-    rental_detail_recurring_common
+    rental_recurring_common,
+    rental_recurring_fee_schedule_common,
 )

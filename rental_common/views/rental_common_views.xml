@@ -89,6 +89,8 @@
                         <field name="type_id" invisible="1"/>
                         <field name="company_id" groups="base.group_multi_company"/>
                         <field name="partner_id"/>
+                        <field name="contact_id"/>
+                        <field name="mailing_id"/>
                         <field name="user_id"/>
                     </group>
                     <group name="group_1_2" colspan="1" col="2">
@@ -147,8 +149,8 @@
                                       </form>
                                   </field>
                                 </page>
-                                <page name="recurring" string="Recurring(s)">
-                                  <field name="recurring_ids" colspan="4" nolabel="1">
+                                <page name="recurring_fee" string="Recurring Fees">
+                                  <field name="recurring_fee_ids" colspan="4" nolabel="1" context="{'pricelist_id':pricelist_id}">
                                       <tree>
                                         <field name="product_id"/>
                                         <field name="qty"/>
@@ -161,6 +163,7 @@
                                       <form string="Details">
                                         <group name="group_3" colspan="4" col="2">
                                             <group name="group_3_1" colspan="1" col="2">
+                                              <field name="pricelist_id"/>
                                               <field name="product_id"/>
                                               <field name="qty"/>
                                               <field name="uom_id"/>
@@ -173,6 +176,29 @@
                                               <field name="period_number"/>
                                             </group>
                                         </group>
+                                        <notebook colspan="4">
+                                          <page name="schedule_recurring_fee" string="Schedule(s)">
+                                            <field name="recurring_fee_schedule_ids" colspan="4" nolabel="1">
+                                                <tree create="false" edit="false" delete="false">
+                                                    <field name="date"/>
+                                                    <field name="amount"/>
+                                                    <field name="amount_tax"/>
+                                                    <field name="state"/>
+                                                    <field name="rental_state" invisible="1"/>
+                                                    <!-- <button name="action_create_invoice" string="Create Invoice" type="object" icon="gtk-execute" attrs="{'invisible':['|',('state','!=','draft'),('rental_state','!=','open')]}"/> -->
+                                                </tree>
+                                                <form create="false" edit="false" delete="false">
+                                                    <group name="form_recurring_fee_schedule_1" colspan="4" col="2">
+                                                        <field name="date"/>
+                                                        <field name="amount"/>
+                                                        <field name="invoice_id"/>
+                                                        <field name="invoice_line_id"/>
+                                                        <field name="state"/>
+                                                    </group>
+                                                </form>
+                                            </field>
+                                          </page>
+                                        </notebook>
                                       </form>
                                   </field>
                                 </page>

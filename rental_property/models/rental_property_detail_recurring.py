@@ -5,12 +5,12 @@
 from openerp import models, fields, api
 
 
-class RentalPropertyDetailRecurring(models.Model):
-    _name = "rental.property_detail_recurring"
+class RentalPropertyRecurringFee(models.Model):
+    _name = "rental.property_recurring_fee"
     _inherit = [
-        "rental.detail_recurring_common"
+        "rental.recurring_fee_common"
     ]
-    _description = "Rental Property Recurring"
+    _description = "Rental Property Recurring Fee"
 
     @api.multi
     def _compute_rental_state(self):
@@ -20,4 +20,10 @@ class RentalPropertyDetailRecurring(models.Model):
     detail_id = fields.Many2one(
         string="Details",
         comodel_name="rental.property_detail",
+    )
+
+    recurring_fee_schedule_ids = fields.One2many(
+        string="Schedule",
+        comodel_name="rental.property_recurring_fee_schedule",
+        inverse_name="recurring_fee_id",
     )
