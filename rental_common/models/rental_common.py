@@ -332,6 +332,8 @@ class RentalCommon(models.AbstractModel):
                 raise UserError(msg)
             for detail in document.detail_ids:
                 detail._compute_schedule()
+            for recurring in document.detail_ids.recurring_fee_ids:
+                recurring._compute_schedule()
             document.write(document._prepare_confirm_data())
 
     @api.multi

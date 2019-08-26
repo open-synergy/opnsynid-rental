@@ -86,6 +86,7 @@
                 </div>
                 <group name="group_1" colspan="4" col="2">
                     <group name="group_1_1" colspan="1" col="2">
+                        <field name="id" invisible="1"/>
                         <field name="type_id" invisible="1"/>
                         <field name="company_id" groups="base.group_multi_company"/>
                         <field name="partner_id"/>
@@ -102,7 +103,12 @@
                 </group>
                 <notebook colspan="4">
                     <page name="detail" string="Rental Details">
-                        <field name="detail_ids" nolabel="1" context="{'pricelist_id':pricelist_id}">
+                        <field
+                            name="detail_ids"
+                            nolabel="1"
+                            context="{
+                              'rental_id':active_id,
+                              'pricelist_id':pricelist_id}">
                             <form string="Rental Details">
                               <header>
                                 <button name="action_compute_schedule" type="object" string="Create Schedule" icon="gtk-execute" attrs="{'invisible':[('rental_state','!=','draft')]}"/>
@@ -148,6 +154,14 @@
                                           </group>
                                       </form>
                                   </field>
+                                  <group class="oe_subtotal_footer oe_right">
+                                      <field name="price_subtotal"/>
+                                      <field name="price_tax"/>
+                                      <div class="oe_subtotal_footer_separator oe_inline">
+                                          <label for="price_total"/>
+                                      </div>
+                                      <field name="price_total" nolabel="1" class="oe_subtotal_footer_separator" />
+                                  </group>
                                 </page>
                                 <page name="recurring_fee" string="Recurring Fees">
                                   <field name="recurring_fee_ids" colspan="4" nolabel="1" context="{'pricelist_id':pricelist_id}">
@@ -161,6 +175,10 @@
                                         <field name="period_number"/>
                                       </tree>
                                       <form string="Details">
+                                        <header>
+                                          <button name="action_compute_schedule" type="object" string="Create Schedule" icon="gtk-execute" attrs="{'invisible':[('rental_state','!=','draft')]}"/>
+                                          <field name="rental_state" widget="statusbar" statusbar_visible="draft,confirm,approve,open"/>
+                                        </header>
                                         <group name="group_3" colspan="4" col="2">
                                             <group name="group_3_1" colspan="1" col="2">
                                               <field name="pricelist_id"/>
@@ -185,7 +203,7 @@
                                                     <field name="amount_tax"/>
                                                     <field name="state"/>
                                                     <field name="rental_state" invisible="1"/>
-                                                    <!-- <button name="action_create_invoice" string="Create Invoice" type="object" icon="gtk-execute" attrs="{'invisible':['|',('state','!=','draft'),('rental_state','!=','open')]}"/> -->
+                                                    <button name="action_create_invoice" string="Create Invoice" type="object" icon="gtk-execute" attrs="{'invisible':['|',('state','!=','draft'),('rental_state','!=','open')]}"/>
                                                 </tree>
                                                 <form create="false" edit="false" delete="false">
                                                     <group name="form_recurring_fee_schedule_1" colspan="4" col="2">
@@ -197,20 +215,20 @@
                                                     </group>
                                                 </form>
                                             </field>
+                                            <group class="oe_subtotal_footer oe_right">
+                                                <field name="price_subtotal"/>
+                                                <field name="price_tax"/>
+                                                <div class="oe_subtotal_footer_separator oe_inline">
+                                                    <label for="price_total"/>
+                                                </div>
+                                                <field name="price_total" nolabel="1" class="oe_subtotal_footer_separator" />
+                                            </group>
                                           </page>
                                         </notebook>
                                       </form>
                                   </field>
                                 </page>
                               </notebook>
-                              <group class="oe_subtotal_footer oe_right">
-                                  <field name="price_subtotal"/>
-                                  <field name="price_tax"/>
-                                  <div class="oe_subtotal_footer_separator oe_inline">
-                                      <label for="price_total"/>
-                                  </div>
-                                  <field name="price_total" nolabel="1" class="oe_subtotal_footer_separator" />
-                              </group>
                             </form>
                             <tree>
                                 <field name="object_id"/>

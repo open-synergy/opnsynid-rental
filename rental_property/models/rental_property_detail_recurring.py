@@ -14,12 +14,20 @@ class RentalPropertyRecurringFee(models.Model):
 
     @api.multi
     def _compute_rental_state(self):
-        _super = super(RentalPropertyDetailRecurring, self)
+        _super = super(RentalPropertyRecurringFee, self)
         _super._compute_rental_state()
 
     detail_id = fields.Many2one(
         string="Details",
         comodel_name="rental.property_detail",
+    )
+
+    taxes_id = fields.Many2many(
+        string="Taxes",
+        comodel_name="account.tax",
+        relation="rel_rental_property_recurring_fee_taxes",
+        column1="property_recurring_fee_id",
+        column2="tax_id"
     )
 
     recurring_fee_schedule_ids = fields.One2many(

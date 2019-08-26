@@ -101,7 +101,7 @@ class RentalDetailScheduleCommon(models.AbstractModel):
 
         account_id = (
             self.detail_id.object_id.account_id.id or
-            self.detail_id.type_id.account_id.id or
+            self.detail_id.type_id.rental_account_id.id or
             self.detail_id.partner_id.property_account_receivable.id or
             False
         )
@@ -111,7 +111,7 @@ class RentalDetailScheduleCommon(models.AbstractModel):
                 "Please Contact Administrator"))
         journal_id = (
             self.detail_id.object_id.journal_id.id or
-            self.detail_id.type_id.journal_id.id or
+            self.detail_id.type_id.rental_journal_id.id or
             False
         )
         if not journal_id:

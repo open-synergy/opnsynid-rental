@@ -16,12 +16,20 @@ class RentalType(models.Model):
     code = fields.Char(
         string="Code",
     )
-    journal_id = fields.Many2one(
-        string="Journal",
+    rental_journal_id = fields.Many2one(
+        string="Rental Journal",
         comodel_name="account.journal"
     )
-    account_id = fields.Many2one(
-        string="Account",
+    rental_account_id = fields.Many2one(
+        string="Rental Account",
+        comodel_name="account.account"
+    )
+    recurring_journal_id = fields.Many2one(
+        string="Recurring Journal",
+        comodel_name="account.journal"
+    )
+    recurring_account_id = fields.Many2one(
+        string="Recurring Account",
         comodel_name="account.account"
     )
     active = fields.Boolean(

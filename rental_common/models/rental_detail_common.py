@@ -96,7 +96,7 @@ class RentalDetailCommon(models.AbstractModel):
     )
     def _compute_amount(self):
         for line in self:
-            price = line.price_unit * line.qty
+            price = line.price_unit
             taxes = line.taxes_id.compute_all(
                 price,
                 line.qty,
@@ -234,11 +234,13 @@ class RentalDetailCommon(models.AbstractModel):
             obj_decimal_precision.precision_get(
                 "Product Unit of Measure")
         self.price_unit = 0.0
+        test =\
+            self.env.context.get(
+                "rental_id", False)
         if self.object_id:
             product_id = self.object_id.product_id
             if product_id:
-                if self.rental_id.partner_id and \
-                        float_is_zero(self.price_unit, precision_digits=precision):
+                if float_is_zero(self.price_unit, precision_digits=precision):
                     price = self.pricelist_id.price_get(
                         prod_id=product_id.id,
                         qty=self.qty or 1.0

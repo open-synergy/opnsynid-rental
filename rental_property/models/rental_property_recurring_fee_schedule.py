@@ -14,7 +14,7 @@ class RentalPropertyRecurringFeeSchedule(models.Model):
 
     @api.multi
     def _compute_rental_state(self):
-        _super = super(RentalPropertyDetailSchedule, self)
+        _super = super(RentalPropertyRecurringFeeSchedule, self)
         _super._compute_rental_state()
 
     recurring_fee_id = fields.Many2one(
