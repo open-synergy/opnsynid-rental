@@ -7,6 +7,7 @@ from openerp import models, fields, api
 
 class RentalPropertyDetail(models.Model):
     _name = "rental.property_detail"
+    #TODO: _description
     _inherit = [
         "rental.detail_common"
     ]

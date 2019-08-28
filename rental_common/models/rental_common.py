@@ -270,6 +270,14 @@ class RentalCommon(models.AbstractModel):
             if self.date_start > self.date_end:
                 raise UserError(strWarning)
 
+    @api.constrains(
+        "date_start",
+        "state",
+    )
+    #TODO: Rental hanya bisa dimulai ketika tanggal dan waktu saat ini sama dengan atau lebih besar dari start date
+    def _check_no_start_before_date(self):
+        pass
+
     @api.multi
     @api.onchange(
         "partner_id"

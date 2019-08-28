@@ -65,6 +65,7 @@
                 <button name="action_done" type="object" string="Finish" class="oe_highlight" attrs="{'invisible':['|',('state','!=','open'),('done_ok','=',False)]}" confirm="Finish rental. Are you sure?"/>
                 <button name="%(base_print_policy.base_print_document_action)d" string="Print" type="action" icon="gtk-print"/>
                 <button name="%(base_cancel_reason.base_cancel_reason_wizard_action)d" type="action" string="Cancel" attrs="{'invisible':['|',('state','=','cancel'),('cancel_ok','=',False)]}" confirm="Cancel rental. Are you sure?"/>
+                <!-- TODO: tombol terminate hanyaa boleh muncul ketika state == In Progress-->
                 <button name="action_terminate" type="object" string="Terminate" attrs="{'invisible':['|',('state','=','open'),('terminate_ok','=',False)]}" confirm="Terminate rental. Are you sure?"/>
                 <button name="action_restart" type="object" string="Restart" attrs="{'invisible':['|',('state','!=','cancel'),('restart_ok','=',False)]}" confirm="Restart rental. Are you sure?"/>
                 <field name="state" widget="statusbar" statusbar_visible="draft,confirm,approve,open"/>
@@ -90,7 +91,9 @@
                         <field name="type_id" invisible="1"/>
                         <field name="company_id" groups="base.group_multi_company"/>
                         <field name="partner_id"/>
+                        <!-- TODO: hanya bisa memilih contact_id dengan parent_id == partner_id-->
                         <field name="contact_id"/>
+                        <!-- TODO: hanya bisa memilih mailing_id dengan parent_id == partner_id-->
                         <field name="mailing_id"/>
                         <field name="user_id"/>
                     </group>
@@ -142,6 +145,7 @@
                                           <field name="amount_tax"/>
                                           <field name="state"/>
                                           <field name="rental_state" invisible="1"/>
+                                          <!-- TODO: Tombol muncul ketika status rental (1) In Progress, atau (2) Done, atau (3) Terminate -->
                                           <button name="action_create_invoice" string="Create Invoice" type="object" icon="gtk-execute" attrs="{'invisible':['|',('state','!=','draft'),('rental_state','!=','open')]}"/>
                                       </tree>
                                       <form create="false" edit="false" delete="false">
