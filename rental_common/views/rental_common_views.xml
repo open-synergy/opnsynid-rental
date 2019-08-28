@@ -47,6 +47,8 @@
             <field name="name"/>
             <field name="company_id" groups="base.group_multi_company"/>
             <field name="partner_id"/>
+            <field name="date_start"/>
+            <field name="date_end"/>
             <field name="user_id"/>
             <field name="state"/>
         </tree>
@@ -90,11 +92,9 @@
                         <field name="id" invisible="1"/>
                         <field name="type_id" invisible="1"/>
                         <field name="company_id" groups="base.group_multi_company"/>
-                        <field name="partner_id"/>
-                        <!-- TODO: hanya bisa memilih contact_id dengan parent_id == partner_id-->
-                        <field name="contact_id"/>
-                        <!-- TODO: hanya bisa memilih mailing_id dengan parent_id == partner_id-->
-                        <field name="mailing_id"/>
+                        <field name="partner_id" domain="[('parent_id','=',False)]"/>
+                        <field name="contact_id" domain="[('parent_id','=',partner_id)]"/>
+                        <field name="mailing_id" domain="[('parent_id','=',partner_id)]"/>
                         <field name="user_id"/>
                     </group>
                     <group name="group_1_2" colspan="1" col="2">

@@ -332,6 +332,18 @@ class RentalCommon(models.AbstractModel):
                 self.partner_id.id
             )
 
+    @api.onchange(
+        "partner_id",
+    )
+    def onchange_contact_id(self):
+        self.contact_id = False
+
+    @api.onchange(
+        "partner_id",
+    )
+    def onchange_mailing_id(self):
+        self.mailing_id = False        
+
     @api.multi
     def action_confirm(self):
         msg = _("Warning Message")
