@@ -152,11 +152,11 @@ class RentalRecurringFeeCommon(models.AbstractModel):
     period = fields.Selection(
         string="Period",
         selection=[
-            ("B", "Daily(Business Day)"),
-            ("D", "Daily(Calendar Day)"),
+            ("D", "Daily"),
+            ("MS", "Monthly"),
+            ("YS", "Yearly"),
         ],
-        default="B",
-        ondelete="restrict",
+        default="MS",
         required=True,
     )
     period_number = fields.Integer(
@@ -248,10 +248,12 @@ class RentalRecurringFeeCommon(models.AbstractModel):
             self.recurring_fee_schedule_ids.unlink()
         obj_schedule = self.env[self._get_schedule_name()]
         pd_schedule = self._get_schedule()
+        offset = datetime.strptime(self.date_start, "%Y-%m-%d").day
         for period in range(0, self.period_number):
+            dt_period = pd_schedule[period] + pd.DateOffset(day=offset)
             obj_schedule.create({
                 "recurring_fee_id": self.id,
-                "date": pd_schedule[period].strftime("%Y-%m-%d"),
+                "date": dt_period.strftime("%Y-%m-%d"),
                 "amount": self.price_subtotal,
                 "amount_tax": self.price_tax,
             })
