@@ -11,6 +11,22 @@ class RentalPropertyDetail(models.Model):
     _inherit = [
         "rental.detail_common"
     ]
+    year_period = fields.Integer(
+        related="rental_id.year_period",
+        store=True,
+    )
+    month_period = fields.Integer(
+        related="rental_id.month_period",
+        store=True,
+    )
+    day_period = fields.Integer(
+        related="rental_id.day_period",
+        store=True,
+    )
+    hour_period = fields.Integer(
+        related="rental_id.hour_period",
+        store=True,
+    )
 
     rental_id = fields.Many2one(
         comodel_name="rental.property",
