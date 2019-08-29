@@ -3,8 +3,11 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from openerp import models, fields, api, _
+from datetime import datetime
 from openerp.exceptions import Warning as UserError
+from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import logging
+import pytz
 _logger = logging.getLogger(__name__)
 
 try:
@@ -325,9 +328,39 @@ class RentalCommon(models.AbstractModel):
         "date_start",
         "state",
     )
-    #TODO: Rental hanya bisa dimulai ketika tanggal dan waktu saat ini sama dengan atau lebih besar dari start date
     def _check_no_start_before_date(self):
-        pass
+        if self.date_start and self.state == "open":
+            conv_date_start =\
+                self._convert_datetime_from_utc(self.date_start)
+            strWarning = _(
+                "Rental can only start after "
+                "%s") % (conv_date_start)
+            date_now = fields.Datetime.now()
+            if self.date_start > date_now:
+                raise UserError(strWarning)
+
+    @api.multi
+    def _convert_datetime_from_utc(self, dt):
+        self.ensure_one()
+        convert_dt = datetime.strptime(
+            dt,
+            DEFAULT_SERVER_DATETIME_FORMAT
+        )
+        user = self.env.user
+
+        if user.tz:
+            tz = pytz.timezone(user.tz)
+        else:
+            tz = pytz.utc
+
+        convert_utc =\
+            pytz.utc.localize(
+                convert_dt).astimezone(tz)
+
+        format_utc =\
+            convert_utc.strftime("%d-%m-%Y %H:%M:%S")
+
+        return format_utc
 
     @api.multi
     @api.onchange(
