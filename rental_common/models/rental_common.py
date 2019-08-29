@@ -4,7 +4,14 @@
 
 from openerp import models, fields, api, _
 from openerp.exceptions import Warning as UserError
+import logging
+_logger = logging.getLogger(__name__)
 
+try:
+    import pandas as pd
+    import numpy as np
+except (ImportError, IOError) as err:
+    _logger.debug(err)
 
 class RentalCommon(models.AbstractModel):
     _name = "rental.common"
@@ -28,6 +35,30 @@ class RentalCommon(models.AbstractModel):
     def _compute_policy(self):
         _super = super(RentalCommon, self)
         _super._compute_policy()
+
+    @api.multi
+    @api.depends(
+        "date_start", "date_end",
+    )
+    def _compute_rental_period(self):
+        for document in self:
+            year_period = month_period = day_period = hour_period = 0
+            if document.date_start and document.date_end:
+                dt_start = pd.to_datetime(document.date_start)
+                dt_end = pd.to_datetime(document.date_end)
+                year_period = int((dt_end - dt_start) / np.timedelta64(1, "Y"))
+                dt_temp_year = dt_start + pd.DateOffset(years=year_period)
+                month_period = int((dt_end - dt_temp_year) / np.timedelta64(1, "M"))
+                dt_temp_month = dt_temp_year + pd.DateOffset(months=month_period)
+                day_period = int((dt_end - dt_temp_month) / np.timedelta64(1, "D"))
+                dt_temp_day = dt_temp_month + pd.DateOffset(days=day_period)
+                hour_period = int((dt_end - dt_temp_day) / np.timedelta64(1, "h"))
+            document.year_period = year_period
+            document.month_period = month_period
+            document.day_period = day_period
+            document.hour_period = hour_period
+
+
 
     name = fields.Char(
         string="# Document",
@@ -137,6 +168,26 @@ class RentalCommon(models.AbstractModel):
                 ("readonly", False),
             ],
         },
+    )
+    year_period = fields.Integer(
+        string="Year Period",
+        compute="_compute_rental_period",
+        store=True,
+    )
+    month_period = fields.Integer(
+        string="Month Period",
+        compute="_compute_rental_period",
+        store=True,
+    )
+    day_period = fields.Integer(
+        string="Day Period",
+        compute="_compute_rental_period",
+        store=True,
+    )
+    hour_period = fields.Integer(
+        string="Hour Period",
+        compute="_compute_rental_period",
+        store=True,
     )
     user_id = fields.Many2one(
         string="Responsible",
@@ -342,7 +393,7 @@ class RentalCommon(models.AbstractModel):
         "partner_id",
     )
     def onchange_mailing_id(self):
-        self.mailing_id = False        
+        self.mailing_id = False
 
     @api.multi
     def action_confirm(self):

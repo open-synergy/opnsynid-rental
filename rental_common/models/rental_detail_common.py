@@ -2,6 +2,7 @@
 # Copyright 2019 OpenSynergy Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from datetime import datetime
 from openerp import models, fields, api, _
 from openerp.exceptions import Warning as UserError
 import openerp.addons.decimal_precision as dp
@@ -20,6 +21,19 @@ except (ImportError, IOError) as err:
 class RentalDetailCommon(models.AbstractModel):
     _name = "rental.detail_common"
     _description = "Abstract Model for Rental Details"
+
+    year_period = fields.Integer(
+        string="Year Period",
+    )
+    month_period = fields.Integer(
+        string="Month Period",
+    )
+    day_period = fields.Integer(
+        string="Day Period",
+    )
+    hour_period = fields.Integer(
+        string="Hour Period",
+    )
 
     rental_id = fields.Many2one(
         string="# Rental",
@@ -72,43 +86,84 @@ class RentalDetailCommon(models.AbstractModel):
         required=True,
         default=lambda self: self._default_pricelist_id(),
     )
-    price_unit = fields.Float(
-        string="Price",
+    year_price_unit = fields.Float(
+        string="Year Price Unit",
         required=True,
-        digits=(16,2),
+        default=0.0,
     )
-    qty = fields.Float(
-        string="Quantity",
+    month_price_unit = fields.Float(
+        string="Month Price Unit",
         required=True,
-        default=1,
-        digits=(16,2),
+        default=0.0,
     )
-    uom_id = fields.Many2one(
-        string="UoM",
-        comodel_name="product.uom",
+    day_price_unit = fields.Float(
+        string="Day Price Unit",
+        required=True,
+        default=0.0,
+    )
+    hour_price_unit = fields.Float(
+        string="Hour Price Unit",
+        required=True,
+        default=0.0,
     )
 
     @api.multi
     @api.depends(
-        "qty",
-        "price_unit",
+        "year_price_unit", "year_period",
+        "month_price_unit", "month_period",
+        "day_price_unit", "day_period",
+        "hour_price_unit", "hour_period",
         "taxes_id",
     )
-    def _compute_amount(self):
-        for line in self:
-            price = line.price_unit
-            taxes = line.taxes_id.compute_all(
-                price,
-                line.qty,
-                product=line.object_id.product_id,
-                partner=line.rental_id.partner_id
+    def _compute_price_subtotal(self):
+        for document in self:
+            document.year_price_subtotal = \
+                document.year_price_unit * document.year_period
+            document.month_price_subtotal = \
+                document.month_price_unit * document.month_period
+            document.day_price_subtotal = \
+                document.day_price_unit * document.day_period
+            document.hour_price_subtotal = \
+                document.hour_price_unit * document.hour_period
+            document.price_subtotal = \
+                document.year_price_subtotal + \
+                document.month_price_subtotal + \
+                document.day_price_subtotal + \
+                document.hour_price_subtotal
+            taxes = document.taxes_id.compute_all(
+                document.price_subtotal,
+                1.0,
+                partner=document.rental_id.partner_id
             )
-            line.update({
-                "price_tax": sum(
-                    t.get("amount", 0.0) for t in taxes.get("taxes", [])),
-                "price_total": taxes["total_included"],
-                "price_subtotal": taxes["total"],
-            })
+            document.price_tax = sum(
+                t.get("amount", 0.0) for t in taxes.get("taxes", []))
+            document.price_total = taxes["total_included"]
+
+    year_price_subtotal = fields.Float(
+        string="Year Subtotal",
+        compute="_compute_price_subtotal",
+        store=True,
+    )
+    month_price_subtotal = fields.Float(
+        string="Month Subtotal",
+        compute="_compute_price_subtotal",
+        store=True,
+    )
+    day_price_subtotal = fields.Float(
+        string="Day Subtotal",
+        compute="_compute_price_subtotal",
+        store=True,
+    )
+    hour_price_subtotal = fields.Float(
+        string="Hour Subtotal",
+        compute="_compute_price_subtotal",
+        store=True,
+    )
+    price_subtotal = fields.Float(
+        string="Price Subtotal",
+        compute="_compute_price_subtotal",
+        store=True,
+    )
 
     taxes_id = fields.Many2many(
         string="Taxes",
@@ -118,27 +173,19 @@ class RentalDetailCommon(models.AbstractModel):
         column2="tax_id",
     )
 
-    price_subtotal = fields.Float(
-        string="Subtotal",
-        digits=dp.get_precision("Account"),
-        store=True,
-        readonly=True,
-        compute="_compute_amount",
-    )
-
     price_total = fields.Float(
         string="Total",
         digits=dp.get_precision("Account"),
         store=True,
         readonly=True,
-        compute="_compute_amount",
+        compute="_compute_price_subtotal",
     )
     price_tax = fields.Float(
         string="Tax",
         digits=dp.get_precision("Account"),
         store=True,
         readonly=True,
-        compute="_compute_amount",
+        compute="_compute_price_subtotal",
     )
 
     date_start = fields.Date(
@@ -149,10 +196,11 @@ class RentalDetailCommon(models.AbstractModel):
     period = fields.Selection(
         string="Period",
         selection=[
-            ("B", "Daily(Business Day)"),
-            ("D", "Daily(Calendar Day)"),
+            ("D", "Daily"),
+            ("MS", "Monthly"),
+            ("YS", "Yearly"),
         ],
-        default="B",
+        default="MS",
         ondelete="restrict",
         required=True,
     )
@@ -221,44 +269,44 @@ class RentalDetailCommon(models.AbstractModel):
                     "Currency on Details must be equal to the "
                     "Currency on Header"))
 
-    @api.multi
-    @api.onchange(
-        "object_id",
-        "object_id.product_id",
-        "qty",
-    )
-    def onchange_price_unit(self):
-        obj_decimal_precision =\
-            self.env["decimal.precision"]
-        precision =\
-            obj_decimal_precision.precision_get(
-                "Product Unit of Measure")
-        self.price_unit = 0.0
-        test =\
-            self.env.context.get(
-                "rental_id", False)
-        if self.object_id:
-            product_id = self.object_id.product_id
-            if product_id:
-                if float_is_zero(self.price_unit, precision_digits=precision):
-                    price = self.pricelist_id.price_get(
-                        prod_id=product_id.id,
-                        qty=self.qty or 1.0
-                    )[self.pricelist_id.id]
-                    self.price_unit = price
+    # @api.multi
+    # @api.onchange(
+    #     "object_id",
+    #     "object_id.product_id",
+    #     "qty",
+    # )
+    # def onchange_price_unit(self):
+    #     obj_decimal_precision =\
+    #         self.env["decimal.precision"]
+    #     precision =\
+    #         obj_decimal_precision.precision_get(
+    #             "Product Unit of Measure")
+    #     self.price_unit = 0.0
+    #     test =\
+    #         self.env.context.get(
+    #             "rental_id", False)
+    #     if self.object_id:
+    #         product_id = self.object_id.product_id
+    #         if product_id:
+    #             if float_is_zero(self.price_unit, precision_digits=precision):
+    #                 price = self.pricelist_id.price_get(
+    #                     prod_id=product_id.id,
+    #                     qty=self.qty or 1.0
+    #                 )[self.pricelist_id.id]
+    #                 self.price_unit = price
 
-    @api.multi
-    @api.onchange(
-        "object_id",
-        "object_id.product_id",
-    )
-    def onchange_product_uom(self):
-        self.uom_id = False
-        if self.object_id:
-            product_id = self.object_id.product_id
-            if product_id:
-                if not self.uom_id:
-                    self.uom_id = product_id.uom_id.id
+    # @api.multi
+    # @api.onchange(
+    #     "object_id",
+    #     "object_id.product_id",
+    # )
+    # def onchange_product_uom(self):
+    #     self.uom_id = False
+    #     if self.object_id:
+    #         product_id = self.object_id.product_id
+    #         if product_id:
+    #             if not self.uom_id:
+    #                 self.uom_id = product_id.uom_id.id
 
     @api.multi
     def action_compute_schedule(self):
@@ -274,10 +322,12 @@ class RentalDetailCommon(models.AbstractModel):
         amount_tax = self._get_period_amount_tax()
         obj_schedule = self.env[self._get_schedule_name()]
         pd_schedule = self._get_schedule()
+        offset = datetime.strptime(self.date_start, "%Y-%m-%d").day
         for period in range(0, self.period_number):
+            dt_period = pd_schedule[period] + pd.DateOffset(day=offset)
             obj_schedule.create({
                 "detail_id": self.id,
-                "date": pd_schedule[period].strftime("%Y-%m-%d"),
+                "date": dt_period.strftime("%Y-%m-%d"),
                 "amount": amount,
                 "amount_tax": amount_tax,
             })

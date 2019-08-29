@@ -100,6 +100,13 @@
                     <group name="group_1_2" colspan="1" col="2">
                         <field name="date_start"/>
                         <field name="date_end"/>
+                        <label for="year_period" string="Rent Duration"/>
+                        <div>
+                            <field name="year_period" class="oe_inline"/> Years(s)<br/>
+                            <field name="month_period" class="oe_inline"/> Month(s)<br/>
+                            <field name="day_period" class="oe_inline"/> Day(s)<br/>
+                            <field name="hour_period" class="oe_inline"/> Hour(s)
+                        </div>
                         <field name="pricelist_id"/>
                         <field name="payment_term_id"/>
                     </group>
@@ -111,6 +118,10 @@
                             nolabel="1"
                             context="{
                               'rental_id':active_id,
+                              'default_year_period': year_period,
+                              'default_month_period': month_period,
+                              'default_day_period': day_period,
+                              'default_hour_period': hour_period,
                               'pricelist_id':pricelist_id}">
                             <form string="Rental Details">
                               <header>
@@ -118,26 +129,49 @@
                                 <field name="rental_state" widget="statusbar" statusbar_visible="draft,confirm,approve,open"/>
                               </header>
                               <group name="group_2" colspan="4" col="2">
-                                  <group name="group_2_1" colspan="1" col="2">
-                                    <field name="pricelist_id"/>
+                                  <group name="group_2_1" string="Rental Object" colspan="1" col="2">
                                     <field name="object_id"/>
-                                    <field name="qty"/>
-                                    <field name="uom_id"/>
-                                    <field name="price_unit"/>
-                                    <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','sale')]" context="{'default_type_tax_use': 'sale'}" options="{'no_create': True}"/>
                                   </group>
-                                  <group string="Invoicing" name="group_2_2" colspan="1" col="2">
-                                    <field name="date_start"/>
-                                    <field name="period"/>
-                                    <field name="period_number"/>
-                                  </group>
-                                  <group string="Other Information" name="group_2_3" colspan="1" col="2">
-                                    <field name="date_handover"/>
-                                    <field name="fitting_out"/>
+                                  <group colspan="1" col="4" string="Rental Price">
+                                      <group colspan="4" col="2">
+                                          <field name="pricelist_id"/>
+                                      </group>
+                                      <field name="year_period" nolabel="1"/>
+                                      <div>
+                                          Year(s)
+                                      </div>
+                                      <field name="year_price_unit" nolabel="1"/>
+                                      <field name="year_price_subtotal" nolabel="1"/>
+                                      <field name="month_period" nolabel="1"/>
+                                      <div>
+                                          Month(s)
+                                      </div>
+                                      <field name="month_price_unit" nolabel="1"/>
+                                      <field name="month_price_subtotal" nolabel="1"/>
+                                      <field name="day_period" nolabel="1"/>
+                                      <div>
+                                          Day(s)
+                                      </div>
+                                      <field name="day_price_unit" nolabel="1"/>
+                                      <field name="day_price_subtotal" nolabel="1"/>
+                                      <field name="hour_period" nolabel="1"/>
+                                      <div>
+                                          Hour(s)
+                                      </div>
+                                      <field name="hour_price_unit" nolabel="1"/>
+                                      <field name="hour_price_subtotal" nolabel="1"/>
+                                      <group colspan="4" col="2">
+                                          <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','sale')]" context="{'default_type_tax_use': 'sale'}" options="{'no_create': True}"/>
+                                      </group>
                                   </group>
                               </group>
                               <notebook colspan="4">
                                 <page name="schedule" string="Schedule(s)">
+                                    <group name="schedule1" colspan="4" col="2">
+                                      <field name="date_start"/>
+                                      <field name="period"/>
+                                      <field name="period_number"/>
+                                    </group>
                                   <field name="schedule_ids" colspan="4" nolabel="1">
                                       <tree create="false" edit="false" delete="false">
                                           <field name="date"/>
@@ -232,14 +266,18 @@
                                       </form>
                                   </field>
                                 </page>
+                                <page name="other_info" string="Other Info">
+                                    <group name="other_info_1" colspan="4" col="2">
+                                      <field name="date_handover"/>
+                                      <field name="fitting_out"/>
+                                    </group>
+                                </page>
                               </notebook>
                             </form>
                             <tree>
                                 <field name="object_id"/>
-                                <field name="qty"/>
-                                <field name="uom_id"/>
-                                <field name="price_unit"/>
                                 <field name="price_subtotal"/>
+                                <field name="date_start"/>
                                 <field name="period"/>
                                 <field name="period_number"/>
                             </tree>
