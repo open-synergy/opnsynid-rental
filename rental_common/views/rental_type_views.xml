@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 OpenSynergy Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<openerp>
+<data>
+<record id="rental_type_view_search" model="ir.ui.view">
+    <field name="name">rental.type form</field>
+    <field name="model">rental.type</field>
+    <field name="arch" type="xml">
+        <search>
+            <field name="name"/>
+            <field name="code"/>
+        </search>
+    </field>
+</record>
+
+<record id="rental_type_view_tree" model="ir.ui.view">
+    <field name="name">rental.type tree</field>
+    <field name="model">rental.type</field>
+    <field name="arch" type="xml">
+        <tree create="false">
+            <field name="name"/>
+            <field name="code"/>
+        </tree>
+    </field>
+</record>
+
+<record id="rental_type_view_form" model="ir.ui.view">
+    <field name="name">rental.type form</field>
+    <field name="model">rental.type</field>
+    <field name="arch" type="xml">
+        <form create="false">
+            <header/>
+            <div class="oe_right oe_button_box" style="width: 300px;" name="buttons"/>
+            <group name="group_1" colspan="4" col="2">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="sequence_id"/>
+                <field name="active"/>
+            </group>
+            <notebook>
+                <page name="pricelist" string="Pricelist">
+                    <group name="pricelist1" colspan="4" col="2">
+                        <field name="year_pricelist_id" domain="[('type','=','rental.year')]"/>
+                        <field name="month_pricelist_id" domain="[('type','=','rental.month')]"/>
+                        <field name="day_pricelist_id" domain="[('type','=','rental.day')]"/>
+                        <field name="hour_pricelist_id" domain="[('type','=','rental.hour')]"/>
+                    </group>
+                </page>
+                <page name="upfront" string="Upfront Cost">
+                    <group name="upfront_1" colspan="4" col="2">
+                        <field name="unfront_cost_journal_id" domain="[('type','=','sale')]"/>
+                        <field name="unfront_cost_receivable_account_id" domain="[('type','=','receivable')]"/>
+                    </group>
+                    <group name="upfront_2" colspan="4" col="2" string="Allowed Product Categories">
+                        <field name="allowed_upfront_product_categ_ids" col="2" nolabel="1"/>
+                    </group>
+                    <group name="upfront_3" colspan="4" col="2" string="Allowed Product">
+                        <field name="allowed_upfront_product_ids" col="2" nolabel="1"/>
+                    </group>
+                </page>
+                <page name="rental_conf" string="Rental Configuration">
+                    <group name="rental_conf_1" colspan="4" col="2">
+                      <field name="rental_journal_id"/>
+                      <field name="rental_account_id"/>
+                      <field name="rental_prepaid_receivable_journal_id" domain="[('type','=','sale')]"/>
+                      <field name="rental_prepaid_receivable_account_id" domain="[('type','=','receivable')]"/>
+                      <field name="rental_receivable_journal_id" domain="[('type','=','sale')]"/>
+                      <field name="rental_receivable_account_id" domain="[('type','=','receivable')]"/>
+                    </group>
+                </page>
+                <page name="recurring_conf" string="Recurring Configuration">
+                    <group name="rental_conf_1" colspan="4" col="2">
+                      <field name="recurring_journal_id"/>
+                      <field name="recurring_account_id"/>
+                    </group>
+                </page>
+                <page name="workflow_policy" string="Workflow Policy">
+                    <group name="workflow_policy_1" colspan="4" col="2">
+                        <field name="rental_confirm_grp_ids" widget="many2many_tags"/>
+                        <field name="rental_approve_grp_ids" widget="many2many_tags"/>
+                        <field name="rental_start_grp_ids" widget="many2many_tags"/>
+                        <field name="rental_done_grp_ids" widget="many2many_tags"/>
+                        <field name="rental_cancel_grp_ids" widget="many2many_tags"/>
+                        <field name="rental_terminate_grp_ids" widget="many2many_tags"/>
+                        <field name="rental_restart_grp_ids" widget="many2many_tags"/>
+                    </group>
+                </page>
+                <page name="note" string="Note">
+                    <field name="note" nolabel="1" colspan="4"/>
+                </page>
+            </notebook>
+        </form>
+    </field>
+</record>
+
+<record id="rental_type_action" model="ir.actions.act_window">
+    <field name="name">Rental Types</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">rental.type</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem
+    id="rental_type_menu"
+    name="Rental Types"
+    parent="rental_configuration_menu"
+    action="rental_type_action"
+    sequence="1"
+    />
+
+</data>
+</openerp>

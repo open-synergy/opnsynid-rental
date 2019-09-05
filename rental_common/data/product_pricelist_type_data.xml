@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 OpenSynergy Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<openerp>
+<data>
+
+<record id="year_rental_pricelist_type" model="product.pricelist.type">
+    <field name="name">Yearly Rental Pricelist</field>
+    <field name="key">rental.year</field>
+</record>
+
+<record id="month_rental_pricelist_type" model="product.pricelist.type">
+    <field name="name">Monthly Rental Pricelist</field>
+    <field name="key">rental.month</field>
+</record>
+
+<record id="day_rental_pricelist_type" model="product.pricelist.type">
+    <field name="name">Daily Rental Pricelist</field>
+    <field name="key">rental.day</field>
+</record>
+
+<record id="hour_rental_pricelist_type" model="product.pricelist.type">
+    <field name="name">Hourly Rental Pricelist</field>
+    <field name="key">rental.hour</field>
+</record>
+
+
+</data>
+</openerp>
