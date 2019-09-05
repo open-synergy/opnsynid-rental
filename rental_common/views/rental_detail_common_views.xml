@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 OpenSynergy Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<openerp>
+<data>
+<record id="rental_detail_common_view_search" model="ir.ui.view">
+    <field name="name">rental.detail_common form</field>
+    <field name="model">rental.detail_common</field>
+    <field name="arch" type="xml">
+        <search>
+            <field name="rental_id"/>
+            <field name="object_id"/>
+            <field name="company_id" groups="base.group_multi_company"/>
+            <field name="partner_id"/>
+            <field name="type_id" invisible="1"/>
+            <field name="payment_term_id"/>
+            <field name="pricelist_id"/>
+            <field name="rental_state"/>
+            <group name="main" string="Group By..">
+                <filter name="grp_rental" string="# Rental" context="{'group_by':'rental_id'}"/>
+                <filter name="grp_object" string="Rental Object" context="{'group_by':'object_id'}"/>
+                <filter name="grp_partner" string="Partner" context="{'group_by':'partner_id'}"/>
+                <filter name="grp_payment_term" string="Payment Term" context="{'group_by':'payment_term_id'}"/>
+                <filter name="grp_pricelist" string="Pricelist" context="{'group_by':'pricelist_id'}"/>
+                <filter name="grp_state" string="Rental State" context="{'group_by':'rental_state'}"/>
+                <filter name="grp_date_start_year" string="Date Start by Year" context="{'group_by':'rental_date_start:year'}"/>
+                <filter name="grp_date_start_month" string="Date Start by Month" context="{'group_by':'rental_date_start:month'}"/>
+                <filter name="grp_date_start_week" string="Date Start by Week" context="{'group_by':'rental_date_start:week'}"/>
+                <filter name="grp_date_start_day" string="Date Start by Day" context="{'group_by':'rental_date_start:day'}"/>
+                <filter name="grp_date_end_year" string="Date End by Year" context="{'group_by':'rental_date_end:year'}"/>
+                <filter name="grp_date_end_month" string="Date End by Month" context="{'group_by':'rental_date_end:month'}"/>
+                <filter name="grp_date_end_week" string="Date End by Week" context="{'group_by':'rental_date_end:week'}"/>
+                <filter name="grp_date_end_day" string="Date End by Day" context="{'group_by':'rental_date_end:day'}"/>
+            </group>
+        </search>
+    </field>
+</record>
+
+<record id="rental_detail_common_view_tree" model="ir.ui.view">
+    <field name="name">rental.detail_common tree</field>
+    <field name="model">rental.detail_common</field>
+    <field name="arch" type="xml">
+        <tree create="false" edit="false" unlink="false">
+            <field name="rental_id"/>
+            <field name="object_id"/>
+            <field name="company_id" groups="base.group_multi_company"/>
+            <field name="partner_id"/>
+            <field name="type_id" invisible="1"/>
+            <field name="rental_date_start"/>
+            <field name="rental_date_end"/>
+            <field name="payment_term_id"/>
+            <field name="pricelist_id"/>
+            <field name="price_total"/>
+            <field name="price_tax"/>
+            <field name="price_subtotal"/>
+            <field name="rental_state"/>
+        </tree>
+    </field>
+</record>
+
+<record id="rental_detail_common_view_form" model="ir.ui.view">
+    <field name="name">rental.detail_common form</field>
+    <field name="model">rental.detail_common</field>
+    <field name="arch" type="xml">
+        <form create="false" edit="false" delete="false">
+          <header>
+            <button name="action_compute_schedule" type="object" string="Create Schedule" icon="gtk-execute" attrs="{'invisible':[('rental_state','!=','draft')]}"/>
+            <field name="rental_state" widget="statusbar" statusbar_visible="draft,confirm,approve,open"/>
+          </header>
+          <group name="group_2" colspan="4" col="2">
+              <group name="group_2_1" string="Rental Object" colspan="1" col="2">
+                  <field name="rental_id"/>
+                  <field name="object_id"/>
+                  <field name="rental_date_start"/>
+                  <field name="rental_date_end"/>
+              </group>
+              <group colspan="1" col="4" string="Rental Price">
+                  <group colspan="4" col="2">
+                      <field name="pricelist_id"/>
+                  </group>
+                  <field name="year_period" nolabel="1"/>
+                  <div>
+                      Year(s)
+                  </div>
+                  <field name="year_price_unit" nolabel="1"/>
+                  <field name="year_price_subtotal" nolabel="1"/>
+                  <field name="month_period" nolabel="1"/>
+                  <div>
+                      Month(s)
+                  </div>
+                  <field name="month_price_unit" nolabel="1"/>
+                  <field name="month_price_subtotal" nolabel="1"/>
+                  <field name="day_period" nolabel="1"/>
+                  <div>
+                      Day(s)
+                  </div>
+                  <field name="day_price_unit" nolabel="1"/>
+                  <field name="day_price_subtotal" nolabel="1"/>
+                  <field name="hour_period" nolabel="1"/>
+                  <div>
+                      Hour(s)
+                  </div>
+                  <field name="hour_price_unit" nolabel="1"/>
+                  <field name="hour_price_subtotal" nolabel="1"/>
+                  <group colspan="4" col="2">
+                      <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','sale')]" context="{'default_type_tax_use': 'sale'}" options="{'no_create': True}"/>
+                  </group>
+              </group>
+          </group>
+          <notebook colspan="4">
+            <page name="schedule" string="Schedule(s)">
+                <group name="schedule1" colspan="4" col="2">
+                  <field name="date_start"/>
+                  <field name="period"/>
+                  <field name="period_number"/>
+                  <field name="invoice_schedule_method"/>
+                </group>
+              <field name="schedule_ids" colspan="4" nolabel="1">
+                  <tree create="false" edit="false" delete="false">
+                      <field name="date"/>
+                      <field name="amount"/>
+                      <field name="amount_tax"/>
+                      <field name="state"/>
+                      <field name="rental_state" invisible="1"/>
+                      <!-- TODO: Tombol muncul ketika status rental (1) In Progress, atau (2) Done, atau (3) Terminate -->
+                      <button name="action_create_invoice" string="Create Invoice" type="object" icon="gtk-execute" attrs="{'invisible':['|',('state','=','draft'),('rental_state','=','confirm'),('rental_state','=','cancel')]}"/>
+                  </tree>
+                  <form create="false" edit="false" delete="false">
+                      <group name="form_schedule_1" colspan="4" col="2">
+                          <field name="date"/>
+                          <field name="amount"/>
+                          <field name="invoice_id"/>
+                          <field name="invoice_line_id"/>
+                          <field name="state"/>
+                      </group>
+                  </form>
+              </field>
+              <group class="oe_subtotal_footer oe_right">
+                  <field name="price_subtotal"/>
+                  <field name="price_tax"/>
+                  <div class="oe_subtotal_footer_separator oe_inline">
+                      <label for="price_total"/>
+                  </div>
+                  <field name="price_total" nolabel="1" class="oe_subtotal_footer_separator" />
+              </group>
+            </page>
+            <page name="recurring_fee" string="Recurring Fees">
+              <field name="recurring_fee_ids" colspan="4" nolabel="1" context="{'pricelist_id':pricelist_id}">
+                  <tree>
+                    <field name="product_id"/>
+                    <field name="qty"/>
+                    <field name="uom_id"/>
+                    <field name="price_unit"/>
+                    <field name="price_subtotal"/>
+                    <field name="period"/>
+                    <field name="period_number"/>
+                  </tree>
+                  <form string="Details">
+                    <header>
+                      <button name="action_compute_schedule" type="object" string="Create Schedule" icon="gtk-execute" attrs="{'invisible':[('rental_state','!=','draft')]}"/>
+                      <field name="rental_state" widget="statusbar" statusbar_visible="draft,confirm,approve,open"/>
+                    </header>
+                    <group name="group_3" colspan="4" col="2">
+                        <group name="group_3_1" colspan="1" col="2">
+                          <field name="pricelist_id"/>
+                          <field name="product_id"/>
+                          <field name="qty"/>
+                          <field name="uom_id"/>
+                          <field name="price_unit"/>
+                          <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','sale')]" context="{'default_type_tax_use': 'sale'}" options="{'no_create': True}"/>
+                        </group>
+                        <group string="Invoicing" name="group_3_2" colspan="1" col="2">
+                          <field name="date_start"/>
+                          <field name="period"/>
+                          <field name="period_number"/>
+                        </group>
+                    </group>
+                    <notebook colspan="4">
+                      <page name="schedule_recurring_fee" string="Schedule(s)">
+                        <field name="recurring_fee_schedule_ids" colspan="4" nolabel="1">
+                            <tree create="false" edit="false" delete="false">
+                                <field name="date"/>
+                                <field name="amount"/>
+                                <field name="amount_tax"/>
+                                <field name="state"/>
+                                <field name="rental_state" invisible="1"/>
+                                <button name="action_create_invoice" string="Create Invoice" type="object" icon="gtk-execute" attrs="{'invisible':['|',('state','!=','draft'),('rental_state','!=','open')]}"/>
+                            </tree>
+                            <form create="false" edit="false" delete="false">
+                                <group name="form_recurring_fee_schedule_1" colspan="4" col="2">
+                                    <field name="date"/>
+                                    <field name="amount"/>
+                                    <field name="invoice_id"/>
+                                    <field name="invoice_line_id"/>
+                                    <field name="state"/>
+                                </group>
+                            </form>
+                        </field>
+                        <group class="oe_subtotal_footer oe_right">
+                            <field name="price_subtotal"/>
+                            <field name="price_tax"/>
+                            <div class="oe_subtotal_footer_separator oe_inline">
+                                <label for="price_total"/>
+                            </div>
+                            <field name="price_total" nolabel="1" class="oe_subtotal_footer_separator" />
+                        </group>
+                      </page>
+                    </notebook>
+                  </form>
+              </field>
+            </page>
+            <page name="other_info" string="Other Info">
+                <group name="other_info_1" colspan="4" col="2">
+                  <field name="date_handover"/>
+                  <field name="fitting_out"/>
+                </group>
+            </page>
+          </notebook>
+        </form>
+    </field>
+</record>
+
+</data>
+</openerp>

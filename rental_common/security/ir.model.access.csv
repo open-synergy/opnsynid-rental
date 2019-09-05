@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+rental_type_employee,rental.type - user,model_rental_type,base.group_user,1,1,1,1
+rental_type_all,rental.type - all,model_rental_type,,0,0,0,0
