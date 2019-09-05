@@ -13,3 +13,4 @@
 #
 # To provide both the URL and a branch, use:
 
+opnsynid-product-attribute https://github.com/open-synergy/opnsynid-product-attribute.git 8.0
