@@ -21,6 +21,7 @@ class RentalCommon(models.AbstractModel):
         "base.sequence_document",
         "base.workflow_policy_object",
         "base.cancel.reason_common",
+        "base.terminate.reason_common",
     ]
     _description = "Abstract Model for Rental"
 
@@ -160,11 +161,29 @@ class RentalCommon(models.AbstractModel):
             ],
         },
     )
+
+    account_analytic_id = fields.Many2one(
+        string="Analytic Account",
+        comodel_name="account.analytic.account",
+        required=False,
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+    )
+
+    @api.model
+    def _default_currency_id(self):
+        return self.env.user.company_id.currency_id
+
     currency_id = fields.Many2one(
         string="Currency",
         comodel_name="res.currency",
         required=True,
         readonly=False,
+        default=lambda self: self._default_currency_id(),
         states={
             "draft": [
                 ("readonly", False),
@@ -560,10 +579,18 @@ class RentalCommon(models.AbstractModel):
         for document in self:
             if not document._check_availability():
                 raise UserError(msg)
+            if not document.account_analytic_id:
+                analytic_account_id =\
+                    document._create_analytic_account()
+                if analytic_account_id:
+                    document.write({
+                        "account_analytic_id": analytic_account_id.id
+                    })
             for detail in document.detail_ids:
                 detail._compute_schedule()
-            for recurring in document.detail_ids.recurring_fee_ids:
-                recurring._compute_schedule()
+            for recurring in document.detail_ids:
+                for fee in recurring.recurring_fee_ids:
+                    fee._compute_schedule()
             document.write(document._prepare_confirm_data())
 
     @api.multi
@@ -601,6 +628,24 @@ class RentalCommon(models.AbstractModel):
     def _check_availability(self):
         self.ensure_one()
         result = True
+        return result
+
+    @api.multi
+    def _create_analytic_account(self):
+        self.ensure_one()
+        obj_analytic_account =\
+            self.env["account.analytic.account"]
+        result = False
+
+        type_id = self.type_id
+        if type_id.create_parent_ok:
+            if not type_id.rental_account_analytic_id:
+                msg = _("Parent Analytic Account not Defined!")
+                raise UserError(msg)
+            analytic_account_id = obj_analytic_account.create(
+                self._prepare_analytic_account()
+            )
+            result = analytic_account_id
         return result
 
     @api.multi
@@ -675,6 +720,16 @@ class RentalCommon(models.AbstractModel):
             "done_user_id": False,
             "cancel_date": False,
             "cancel_user_id": False,
+        }
+
+    @api.multi
+    def _prepare_analytic_account(self):
+        self.ensure_one()
+        type_id = self.type_id
+
+        return {
+            "parent_id": type_id.rental_account_analytic_id.id,
+            "name": self.name,
         }
 
     @api.multi

@@ -23,6 +23,7 @@
                 <filter name="grp_partner" string="Partner" context="{'group_by':'partner_id'}"/>
                 <filter name="grp_payment_term" string="Payment Term" context="{'group_by':'payment_term_id'}"/>
                 <filter name="grp_pricelist" string="Pricelist" context="{'group_by':'pricelist_id'}"/>
+                <filter name="grp_invoice_schedule_method" string="Invoice Schedule Method" context="{'group_by':'invoice_schedule_method'}"/>
                 <filter name="grp_state" string="Rental State" context="{'group_by':'rental_state'}"/>
                 <filter name="grp_date_start_year" string="Date Start by Year" context="{'group_by':'rental_date_start:year'}"/>
                 <filter name="grp_date_start_month" string="Date Start by Month" context="{'group_by':'rental_date_start:month'}"/>
@@ -146,8 +147,10 @@
               </group>
             </page>
             <page name="recurring_fee" string="Recurring Fees">
-              <field name="recurring_fee_ids" colspan="4" nolabel="1" context="{'pricelist_id':pricelist_id}">
+              <field name="recurring_fee_ids" colspan="4" nolabel="1" context="{'type_id': type_id}">
                   <tree>
+                    <field name="sequence" widget="handle"/>
+                    <field name="type_id" invisible="1"/>
                     <field name="product_id"/>
                     <field name="qty"/>
                     <field name="uom_id"/>
@@ -163,6 +166,7 @@
                     </header>
                     <group name="group_3" colspan="4" col="2">
                         <group name="group_3_1" colspan="1" col="2">
+                          <field name="type_id" invisible="0"/>
                           <field name="pricelist_id"/>
                           <field name="product_id"/>
                           <field name="qty"/>

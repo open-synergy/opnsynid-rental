@@ -76,8 +76,6 @@ class RentalDetailScheduleCommon(models.AbstractModel):
             document.write({
                 "state": "post",
             })
-            # if document.detail_id._check_done():
-            #     document.detail_id.action_done()
 
     @api.multi
     def _create_invoice(self):
@@ -166,11 +164,12 @@ class RentalDetailScheduleCommon(models.AbstractModel):
     def _prepare_invoice_line(self, inv):
         self.ensure_one()
 
+        rental = self.detail_id.rental_id
         account = self._get_invoice_detail_account()
-
         return {
             "invoice_id": inv.id,
             "name": _("Rental"),
+            "account_analytic_id": rental.account_analytic_id.id,
             'account_id': account.id,
             'product_id': self.detail_id.object_id.product_id.id,
             'uos_id': self.detail_id.uom_id.id,
@@ -178,5 +177,4 @@ class RentalDetailScheduleCommon(models.AbstractModel):
             'price_unit': self.amount,
             'invoice_line_tax_id': [(6, 0, self.detail_id.taxes_id.ids)],
             'discount': 0.0,
-            'account_analytic_id': False,
         }

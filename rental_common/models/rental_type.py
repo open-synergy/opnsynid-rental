@@ -24,6 +24,13 @@ class RentalType(models.Model):
         string="Rental Account",
         comodel_name="account.account"
     )
+    rental_account_analytic_id = fields.Many2one(
+        string="Parent Analytic Account",
+        comodel_name="account.analytic.account",
+    )
+    create_parent_ok = fields.Boolean(
+        string="Create Parent Analytic Account",
+    )
     allowed_upfront_product_ids = fields.Many2many(
         string="Allowed Upfront Products",
         comodel_name="product.product",
@@ -35,6 +42,20 @@ class RentalType(models.Model):
         string="Allowed Upfront Product Categories",
         comodel_name="product.category",
         relation="rel_rental_type_2_upfront_product_categ",
+        column1="type_id",
+        column2="category_id",
+    )
+    allowed_recurring_fee_product_ids = fields.Many2many(
+        string="Allowed Recurring Fee Products",
+        comodel_name="product.product",
+        relation="rel_rental_type_2_recurring_fee_product",
+        column1="type_id",
+        column2="product_id",
+    )
+    allowed_recurring_fee_product_categ_ids = fields.Many2many(
+        string="Allowed Recurring Fee Product Categories",
+        comodel_name="product.category",
+        relation="rel_rental_type_2_recurring_fee_product_categ",
         column1="type_id",
         column2="category_id",
     )

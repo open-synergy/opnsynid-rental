@@ -68,12 +68,20 @@
                       <field name="rental_prepaid_receivable_account_id" domain="[('type','=','receivable')]"/>
                       <field name="rental_receivable_journal_id" domain="[('type','=','sale')]"/>
                       <field name="rental_receivable_account_id" domain="[('type','=','receivable')]"/>
+                      <field name="rental_account_analytic_id"/>
+                      <field name="create_parent_ok"/>
                     </group>
                 </page>
                 <page name="recurring_conf" string="Recurring Configuration">
                     <group name="rental_conf_1" colspan="4" col="2">
                       <field name="recurring_journal_id"/>
                       <field name="recurring_account_id"/>
+                    </group>
+                    <group name="rental_conf_2" colspan="4" col="2" string="Allowed Product Categories">
+                        <field name="allowed_recurring_fee_product_categ_ids" col="2" nolabel="1"/>
+                    </group>
+                    <group name="rental_conf_3" colspan="4" col="2" string="Allowed Product">
+                        <field name="allowed_recurring_fee_product_ids" col="2" nolabel="1"/>
                     </group>
                 </page>
                 <page name="workflow_policy" string="Workflow Policy">

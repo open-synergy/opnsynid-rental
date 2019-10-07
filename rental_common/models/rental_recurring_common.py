@@ -25,6 +25,11 @@ class RentalRecurringFeeCommon(models.AbstractModel):
         comodel_name="rental.detail_common",
         ondelete="cascade",
     )
+    sequence = fields.Integer(
+        string="Sequence",
+        default=5,
+        required=True,
+    )
     product_id = fields.Many2one(
         string="Product",
         comodel_name="product.product",
@@ -169,6 +174,28 @@ class RentalRecurringFeeCommon(models.AbstractModel):
         string="Schedules",
         comodel_name="rental.recurring_fee_schedule_common",
         inverse_name="recurring_fee_id",
+    )
+
+    @api.multi
+    def _compute_allowed_product(self):
+        for document in self:
+            _logger.debug(document.type_id)
+            document.allowed_product_ids = \
+                document.type_id.allowed_recurring_fee_product_ids.ids
+            document.allowed_product_categ_ids = \
+                document.type_id.allowed_recurring_fee_product_categ_ids.ids
+
+    allowed_product_ids = fields.Many2many(
+        string="Allowed Recurring Fee Products",
+        comodel_name="product.product",
+        compute="_compute_allowed_product",
+        store=False,
+    )
+    allowed_product_categ_ids = fields.Many2many(
+        string="Allowed Recurring Fee Product Categories",
+        comodel_name="product.category",
+        compute="_compute_allowed_product",
+        store=False,
     )
 
     @api.multi
