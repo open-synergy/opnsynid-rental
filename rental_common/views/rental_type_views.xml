@@ -75,6 +75,12 @@
                       <field name="recurring_journal_id"/>
                       <field name="recurring_account_id"/>
                     </group>
+                    <group name="rental_conf_2" colspan="4" col="2" string="Allowed Product Categories">
+                        <field name="allowed_recurring_fee_product_categ_ids" col="2" nolabel="1"/>
+                    </group>
+                    <group name="rental_conf_3" colspan="4" col="2" string="Allowed Product">
+                        <field name="allowed_recurring_fee_product_ids" col="2" nolabel="1"/>
+                    </group>
                 </page>
                 <page name="workflow_policy" string="Workflow Policy">
                     <group name="workflow_policy_1" colspan="4" col="2">

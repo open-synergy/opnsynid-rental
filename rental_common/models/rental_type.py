@@ -38,6 +38,20 @@ class RentalType(models.Model):
         column1="type_id",
         column2="category_id",
     )
+    allowed_recurring_fee_product_ids = fields.Many2many(
+        string="Allowed Recurring Fee Products",
+        comodel_name="product.product",
+        relation="rel_rental_type_2_recurring_fee_product",
+        column1="type_id",
+        column2="product_id",
+    )
+    allowed_recurring_fee_product_categ_ids = fields.Many2many(
+        string="Allowed Recurring Fee Product Categories",
+        comodel_name="product.category",
+        relation="rel_rental_type_2_recurring_fee_product_categ",
+        column1="type_id",
+        column2="category_id",
+    )
     unfront_cost_journal_id = fields.Many2one(
         string="Upfront Cost Receivable Journal",
         comodel_name="account.journal",

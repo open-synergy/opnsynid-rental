@@ -235,8 +235,10 @@
                                   </group>
                                 </page>
                                 <page name="recurring_fee" string="Recurring Fees">
-                                  <field name="recurring_fee_ids" colspan="4" nolabel="1">
+                                  <field name="recurring_fee_ids" colspan="4" nolabel="1" context="{'default_type_id':type_id}">
                                       <tree>
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="type_id" invisible="1"/>
                                         <field name="product_id"/>
                                         <field name="qty"/>
                                         <field name="uom_id"/>
@@ -252,8 +254,11 @@
                                         </header>
                                         <group name="group_3" colspan="4" col="2">
                                             <group name="group_3_1" colspan="1" col="2">
+                                              <field name="type_id" invisible="1"/>
                                               <field name="pricelist_id"/>
-                                              <field name="product_id"/>
+                                              <field name="allowed_product_ids" widget="many2many_tags" invisible="1"/>
+                                              <field name="allowed_product_categ_ids" widget="many2many_tags" invisible="1"/>
+                                              <field name="product_id" domain="['|',('id','in',allowed_product_ids[0][2]),('categ_id','in',allowed_product_categ_ids[0][2])]"/>
                                               <field name="qty"/>
                                               <field name="uom_id"/>
                                               <field name="price_unit"/>
