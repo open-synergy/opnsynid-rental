@@ -16,6 +16,18 @@ class RentalRecurringFeeScheduleCommon(models.AbstractModel):
             document.rental_state = \
                 document.recurring_fee_id.detail_id.rental_id.state
 
+    @api.multi
+    def _compute_state(self):
+        for document in self:
+            state = "uninvoiced"
+            if document.manual:
+                state = "done"
+            elif document.invoice_id and document.invoice_id.state == "open":
+                state = "invoiced"
+            elif document.invoice_id and document.invoice_id.state == "paid":
+                state = "done"
+            document.state = state
+
     recurring_fee_id = fields.Many2one(
         string="Details",
         comodel_name="rental.recurring_fee_common",
@@ -58,14 +70,19 @@ class RentalRecurringFeeScheduleCommon(models.AbstractModel):
         compute="_compute_rental_state",
         store=False,
     )
+    manual = fields.Boolean(
+        string="Manually Controlled",
+        readonly=True,
+    )
     state = fields.Selection(
-        string="Invoice State",
+        string="State",
         selection=[
-            ("draft", "Draft"),
-            ("post", "Posted"),
+            ("uninvoiced", "Uninvoiced"),
+            ("invoiced", "Invoiced"),
+            ("done", "Paid/Done"),
         ],
-        required=True,
-        default="draft",
+        compute="_compute_state",
+        store=True,
     )
 
     @api.multi
@@ -73,11 +90,30 @@ class RentalRecurringFeeScheduleCommon(models.AbstractModel):
         for document in self:
             inv = document._create_invoice()
             inv.button_reset_taxes()
-            document.write({
-                "state": "post",
-            })
-            # if document.detail_id._check_done():
-            #     document.detail_id.action_done()
+
+    @api.multi
+    def action_uncontrol_schedule(self):
+        for document in self:
+            document.write(document._prepare_uncontrol_schedule())
+
+    @api.multi
+    def action_control_schedule(self):
+        for document in self:
+            document.write(document._prepare_control_schedule())
+
+    @api.multi
+    def _prepare_uncontrol_schedule(self):
+        self.ensure_one()
+        return {
+            "manual": True,
+        }
+
+    @api.multi
+    def _prepare_control_schedule(self):
+        self.ensure_one()
+        return {
+            "manual": False,
+        }
 
     @api.multi
     def _create_invoice(self):
@@ -107,8 +143,8 @@ class RentalRecurringFeeScheduleCommon(models.AbstractModel):
         )
         if not account_id:
             raise UserError(_(
-                "Account Is Empty "
-                "Please Contact Administrator"))
+                "Recurring fee receivable account is not configured. \n "
+                "Please contact administrator"))
         # TO DO
         journal_id = (
             self.recurring_fee_id.type_id.recurring_journal_id.id or
@@ -116,8 +152,10 @@ class RentalRecurringFeeScheduleCommon(models.AbstractModel):
         )
         if not journal_id:
             raise UserError(_(
-                "Journal Is Empty "
-                "Please Contact Administrator"))
+                "Recurring sale journal is not configured. \n "
+                "Please contact administrator"))
+
+        name = self._get_recurring_invoice_description()
 
         return {
             "origin": self.recurring_fee_id.detail_id.rental_id.name,
@@ -130,7 +168,25 @@ class RentalRecurringFeeScheduleCommon(models.AbstractModel):
             "company_id": self.recurring_fee_id.company_id.id,
             "currency_id": self.recurring_fee_id.pricelist_id.currency_id.id,
             "journal_id": journal_id,
+            "name": name,
         }
+
+    @api.multi
+    def _get_line_account(self):
+        self.ensure_one()
+        recurring = self.recurring_fee_id
+        product = recurring.product_id
+
+        account = product.categ_id.property_account_income_categ
+
+        if not account:
+            account = product.property_income_account
+
+        error_msg = _("Recurring product %s income account "
+                      "is not configured. \n"
+                      "Please contact administrator."
+                      ) % (product.display_name)
+        raise UserError(error_msg)
 
     @api.multi
     def _prepare_invoice_line(self, inv):
@@ -152,3 +208,22 @@ class RentalRecurringFeeScheduleCommon(models.AbstractModel):
             'discount': 0.0,
             'account_analytic_id': False,
         }
+
+    @api.multi
+    def _get_recurring_invoice_description(self):
+        self.ensure_one()
+        type = self.recurring_fee_id.detail_id.rental_id.type_id
+        if type.recurring_invoice_name_method == "default":
+            return self._get_default_recurring_invoice_description()
+        else:
+            return type._generate_recurring_invoice_description(self)
+
+    @api.multi
+    def _get_default_recurring_invoice_description(self):
+        self.ensure_one()
+        recurring = self.recurring_fee_id
+        rental = recurring.detail_id.rental_id
+        period = dict(recurring._fields["period"].selection).get(
+            recurring.period)
+        result = "%s recurring invoice for # %s" % (period, rental.name)
+        return result

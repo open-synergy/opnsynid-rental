@@ -15,14 +15,12 @@
             <field name="partner_id"/>
             <field name="type_id" invisible="1"/>
             <field name="payment_term_id"/>
-            <field name="pricelist_id"/>
             <field name="rental_state"/>
             <group name="main" string="Group By..">
                 <filter name="grp_rental" string="# Rental" context="{'group_by':'rental_id'}"/>
                 <filter name="grp_object" string="Rental Object" context="{'group_by':'object_id'}"/>
                 <filter name="grp_partner" string="Partner" context="{'group_by':'partner_id'}"/>
                 <filter name="grp_payment_term" string="Payment Term" context="{'group_by':'payment_term_id'}"/>
-                <filter name="grp_pricelist" string="Pricelist" context="{'group_by':'pricelist_id'}"/>
                 <filter name="grp_state" string="Rental State" context="{'group_by':'rental_state'}"/>
                 <filter name="grp_date_start_year" string="Date Start by Year" context="{'group_by':'rental_date_start:year'}"/>
                 <filter name="grp_date_start_month" string="Date Start by Month" context="{'group_by':'rental_date_start:month'}"/>
@@ -50,7 +48,6 @@
             <field name="rental_date_start"/>
             <field name="rental_date_end"/>
             <field name="payment_term_id"/>
-            <field name="pricelist_id"/>
             <field name="price_total"/>
             <field name="price_tax"/>
             <field name="price_subtotal"/>
@@ -71,14 +68,12 @@
           <group name="group_2" colspan="4" col="2">
               <group name="group_2_1" string="Rental Object" colspan="1" col="2">
                   <field name="rental_id"/>
+                  <field name="type_id" invisible="1"/>
                   <field name="object_id"/>
                   <field name="rental_date_start"/>
                   <field name="rental_date_end"/>
               </group>
               <group colspan="1" col="4" string="Rental Price">
-                  <group colspan="4" col="2">
-                      <field name="pricelist_id"/>
-                  </group>
                   <field name="year_period" nolabel="1"/>
                   <div>
                       Year(s)
@@ -121,10 +116,13 @@
                       <field name="date"/>
                       <field name="amount"/>
                       <field name="amount_tax"/>
+                      <field name="invoice_id"/>
+                      <field name="manual"/>
                       <field name="state"/>
                       <field name="rental_state" invisible="1"/>
-                      <!-- TODO: Tombol muncul ketika status rental (1) In Progress, atau (2) Done, atau (3) Terminate -->
-                      <button name="action_create_invoice" string="Create Invoice" type="object" icon="gtk-execute" attrs="{'invisible':['|',('state','=','draft'),('rental_state','=','confirm'),('rental_state','=','cancel')]}"/>
+                      <button name="action_uncontrol_schedule" string="Uncontrol Schedule" icon="gtk-no" type="object" attrs="{'invisible':['|','|',('invoice_id','!=',False),('manual','=',True),('rental_state','!=','open')]}"/>
+                      <button name="action_control_schedule" string="Control Schedule" icon="gtk-yes" type="object" attrs="{'invisible':['|','|',('manual','=',False),('rental_state','!=','open'),('rental_state','!=','open')]}"/>
+                      <button name="action_create_invoice" string="Create Invoice" type="object" icon="gtk-execute" attrs="{'invisible':['|','|',('invoice_id','!=',False),('rental_state','!=','open'),('manual','=',True)]}"/>
                   </tree>
                   <form create="false" edit="false" delete="false">
                       <group name="form_schedule_1" colspan="4" col="2">
@@ -146,8 +144,10 @@
               </group>
             </page>
             <page name="recurring_fee" string="Recurring Fees">
-              <field name="recurring_fee_ids" colspan="4" nolabel="1" context="{'pricelist_id':pricelist_id}">
+              <field name="recurring_fee_ids" colspan="4" nolabel="1" context="{'type_id': type_id}">
                   <tree>
+                    <field name="sequence" widget="handle"/>
+                    <field name="type_id" invisible="1"/>
                     <field name="product_id"/>
                     <field name="qty"/>
                     <field name="uom_id"/>
@@ -163,7 +163,7 @@
                     </header>
                     <group name="group_3" colspan="4" col="2">
                         <group name="group_3_1" colspan="1" col="2">
-                          <field name="pricelist_id"/>
+                          <field name="type_id" invisible="0"/>
                           <field name="product_id"/>
                           <field name="qty"/>
                           <field name="uom_id"/>

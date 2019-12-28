@@ -19,7 +19,7 @@
     <field name="name">rental.type tree</field>
     <field name="model">rental.type</field>
     <field name="arch" type="xml">
-        <tree create="false">
+        <tree create="false" delete="false">
             <field name="name"/>
             <field name="code"/>
         </tree>
@@ -30,7 +30,7 @@
     <field name="name">rental.type form</field>
     <field name="model">rental.type</field>
     <field name="arch" type="xml">
-        <form create="false">
+        <form create="false" delete="false">
             <header/>
             <div class="oe_right oe_button_box" style="width: 300px;" name="buttons"/>
             <group name="group_1" colspan="4" col="2">
@@ -49,9 +49,13 @@
                     </group>
                 </page>
                 <page name="upfront" string="Upfront Cost">
-                    <group name="upfront_1" colspan="4" col="2">
+                    <group name="upfront_1" colspan="4" col="2" string="Accounting Configuration">
                         <field name="unfront_cost_journal_id" domain="[('type','=','sale')]"/>
                         <field name="unfront_cost_receivable_account_id" domain="[('type','=','receivable')]"/>
+                    </group>
+                    <group name="upfront_4" colspan="4" col="2" string="Invoice Description">
+                        <field name="upfront_invoice_name_method"/>
+                        <field name="upfront_invoice_name_code" attrs="{'invisible':[('upfront_invoice_name_method','=','default')]}"/>
                     </group>
                     <group name="upfront_2" colspan="4" col="2" string="Allowed Product Categories">
                         <field name="allowed_upfront_product_categ_ids" col="2" nolabel="1"/>
@@ -60,20 +64,42 @@
                         <field name="allowed_upfront_product_ids" col="2" nolabel="1"/>
                     </group>
                 </page>
-                <page name="rental_conf" string="Rental Configuration">
-                    <group name="rental_conf_1" colspan="4" col="2">
-                      <field name="rental_journal_id"/>
-                      <field name="rental_account_id"/>
-                      <field name="rental_prepaid_receivable_journal_id" domain="[('type','=','sale')]"/>
-                      <field name="rental_prepaid_receivable_account_id" domain="[('type','=','receivable')]"/>
-                      <field name="rental_receivable_journal_id" domain="[('type','=','sale')]"/>
-                      <field name="rental_receivable_account_id" domain="[('type','=','receivable')]"/>
+                <page name="rental_conf" string="Invoicing">
+                    <group name="rental_conf_1" colspan="4" col="2" string="Accounting Configuration">
+                        <group name="rental_conf_1_1" colspan="1" col="2">
+                            <field name="rental_prepaid_receivable_journal_id" domain="[('type','=','sale')]"/>
+                            <field name="rental_receivable_journal_id" domain="[('type','=','sale')]"/>
+                        </group>
+                        <group name="rental_conf_1_2" colspan="1" col="2">
+                            <field name="rental_prepaid_receivable_account_id" domain="[('type','=','receivable')]"/>
+                            <field name="rental_receivable_account_id" domain="[('type','=','receivable')]"/>
+                        </group>
+                    </group>
+                    <group name="rental_conf_2" colspan="4" col="2" string="Invoice Description">
+                        <field name="rental_invoice_name_method"/>
+                        <field name="rental_invoice_name_code" attrs="{'invisible':[('rental_invoice_name_method','=','default')]}"/>
                     </group>
                 </page>
-                <page name="recurring_conf" string="Recurring Configuration">
-                    <group name="rental_conf_1" colspan="4" col="2">
+                <page name="recurring_conf" string="Recurring Fee">
+                    <group name="recurring_conf_1" colspan="4" col="2" string="Accounting Configuration">
                       <field name="recurring_journal_id"/>
                       <field name="recurring_account_id"/>
+                    </group>
+                    <group name="recurring_conf_2" colspan="4" col="2" string="Invoice Description">
+                        <field name="recurring_invoice_name_method"/>
+                        <field name="recurring_invoice_name_code" attrs="{'invisible':[('recurring_invoice_name_method','=','default')]}"/>
+                    </group>
+                    <group name="recurring_conf_3" colspan="4" col="2" string="Allowed Product Categories">
+                        <field name="allowed_recurring_fee_product_categ_ids" col="2" nolabel="1"/>
+                    </group>
+                    <group name="recurring_conf_4" colspan="4" col="2" string="Allowed Product">
+                        <field name="allowed_recurring_fee_product_ids" col="2" nolabel="1"/>
+                    </group>
+                </page>
+                <page name="other_accounting" string="Other Accounting Configuration">
+                    <group name="other_accounting_1" colspan="4" col="2">
+                        <field name="rental_account_analytic_id"/>
+                        <field name="create_analytic_ok"/>
                     </group>
                 </page>
                 <page name="workflow_policy" string="Workflow Policy">

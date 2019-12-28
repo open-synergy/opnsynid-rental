@@ -25,6 +25,13 @@
     parent="rental_root_menu"
     />
 
+    <menuitem
+        id="rental_invoice_schedule_menu"
+        name="Rental Invoice Schedule"
+        sequence="3"
+        parent="rental_root_menu"
+        />
+
 <menuitem
     id="rental_report_menu"
     name="Report"

@@ -21,8 +21,10 @@ class RentalCommon(models.AbstractModel):
         "base.sequence_document",
         "base.workflow_policy_object",
         "base.cancel.reason_common",
+        "base.terminate.reason_common",
     ]
     _description = "Abstract Model for Rental"
+    _rental_invoice_schedule_model = "rental.detail_schedule_common"
 
     @api.model
     def _default_company_id(self):
@@ -160,11 +162,29 @@ class RentalCommon(models.AbstractModel):
             ],
         },
     )
+
+    account_analytic_id = fields.Many2one(
+        string="Analytic Account",
+        comodel_name="account.analytic.account",
+        required=False,
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+    )
+
+    @api.model
+    def _default_currency_id(self):
+        return self.env.user.company_id.currency_id
+
     currency_id = fields.Many2one(
         string="Currency",
         comodel_name="res.currency",
         required=True,
         readonly=False,
+        default=lambda self: self._default_currency_id(),
         states={
             "draft": [
                 ("readonly", False),
@@ -314,6 +334,16 @@ class RentalCommon(models.AbstractModel):
         comodel_name="account.invoice",
         readonly=True,
         ondelete="restrict",
+    )
+    manual_upfront = fields.Boolean(
+        string="Manual Control of Upfront Invoice",
+        default=False,
+        readonly=False,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
     )
     note = fields.Text(
         string="Note",
@@ -556,14 +586,22 @@ class RentalCommon(models.AbstractModel):
 
     @api.multi
     def action_confirm(self):
-        msg = _("Warning Message")
+        msg = _("Not available to rent")
         for document in self:
             if not document._check_availability():
                 raise UserError(msg)
+            if not document.account_analytic_id:
+                analytic_account_id =\
+                    document._create_analytic_account()
+                if analytic_account_id:
+                    document.write({
+                        "account_analytic_id": analytic_account_id.id
+                    })
             for detail in document.detail_ids:
                 detail._compute_schedule()
-            for recurring in document.detail_ids.recurring_fee_ids:
-                recurring._compute_schedule()
+            for recurring in document.detail_ids:
+                for fee in recurring.recurring_fee_ids:
+                    fee._compute_schedule()
             document.write(document._prepare_confirm_data())
 
     @api.multi
@@ -601,6 +639,21 @@ class RentalCommon(models.AbstractModel):
     def _check_availability(self):
         self.ensure_one()
         result = True
+        return result
+
+    @api.multi
+    def _create_analytic_account(self):
+        self.ensure_one()
+        obj_analytic_account =\
+            self.env["account.analytic.account"]
+        result = False
+
+        type_id = self.type_id
+        if type_id.create_analytic_ok:
+            analytic_account_id = obj_analytic_account.create(
+                self._prepare_analytic_account()
+            )
+            result = analytic_account_id
         return result
 
     @api.multi
@@ -678,6 +731,17 @@ class RentalCommon(models.AbstractModel):
         }
 
     @api.multi
+    def _prepare_analytic_account(self):
+        self.ensure_one()
+        type_id = self.type_id
+        parent = type_id.rental_account_analytic_id
+
+        return {
+            "parent_id": parent and parent.id or False,
+            "name": self.name,
+        }
+
+    @api.multi
     def _get_upfront_receivable_account(self):
         self.ensure_one()
         return self.type_id.unfront_cost_receivable_account_id
@@ -695,17 +759,19 @@ class RentalCommon(models.AbstractModel):
         account = self._get_upfront_receivable_account()
         if not account:
             raise UserError(_(
-                "Account Is Empty "
-                "Please Contact Administrator"))
+                "Upfront receivable account is not configured. \n"
+                "Please contact administrator"))
 
         journal = self._get_upfront_receivable_journal()
         if not journal:
             raise UserError(_(
-                "Journal Is Empty "
-                "Please Contact Administrator"))
+                "Upfront invoice journal is not configured. \n "
+                "Please contact administrator"))
 
         for upfront in self.upfront_cost_ids:
             line_ids.append((0, 0, upfront._prepare_invoice_line()))
+
+        name = self._get_upfront_invoice_description()
 
         return {
             "origin": self.name,
@@ -717,12 +783,13 @@ class RentalCommon(models.AbstractModel):
             "currency_id": self.currency_id.id,
             "journal_id": journal.id,
             "invoice_line": line_ids,
+            "name": name,
         }
 
     @api.multi
     def _create_upfront_invoice(self):
         self.ensure_one()
-        if not self.upfront_cost_ids:
+        if not self.upfront_cost_ids or self.manual_upfront:
             return False
 
         obj_invoice = self.env["account.invoice"]
@@ -737,6 +804,21 @@ class RentalCommon(models.AbstractModel):
             msg = _("Upfront cost unpaid!")
             raise UserError(msg)
         return True
+
+    @api.multi
+    def _get_upfront_invoice_description(self):
+        self.ensure_one()
+        type = self.type_id
+        if type.upfront_invoice_name_method == "default":
+            return self._get_default_upfront_invoice_description()
+        else:
+            return type._generate_upfront_invoice_description(self)
+
+    @api.multi
+    def _get_default_upfront_invoice_description(self):
+        self.ensure_one()
+        result = "Upfront invoice for # %s" % (self.name)
+        return result
 
     @api.model
     def create(self, values):
@@ -757,3 +839,18 @@ class RentalCommon(models.AbstractModel):
                     raise UserError(strWarning)
         _super = super(RentalCommon, self)
         _super.unlink()
+
+    @api.constrains(
+        "state",
+    )
+    def _check_schedule_state(self):
+        warning_msg = _("Schedule has to be paid/done")
+        obj_schedule = self.env[self._rental_invoice_schedule_model]
+        for document in self:
+            criteria = [
+                ("detail_id.rental_id", "=", document.id),
+                ("state", "!=", "done"),
+            ]
+            unfinish_count = obj_schedule.search_count(criteria)
+            if document.state == "done" and unfinish_count != 0:
+                raise UserError(warning_msg)
