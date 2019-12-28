@@ -103,8 +103,6 @@
                         <field name="contact_id" domain="[('parent_id','=',partner_id)]"/>
                         <field name="mailing_id" domain="[('parent_id','=',partner_id)]"/>
                         <field name="user_id"/>
-                    </group>
-                    <group name="group_1_2" colspan="1" col="2">
                         <field name="date_start"/>
                         <field name="date_end"/>
                         <label for="year_period" string="Rent Duration"/>
@@ -114,6 +112,8 @@
                             <field name="day_period" class="oe_inline"/> Day(s)<br/>
                             <field name="hour_period" class="oe_inline"/> Hour(s)
                         </div>
+                    </group>
+                    <group name="group_1_2" colspan="1" col="2">
                         <field name="currency_id"/>
                         <field name="year_pricelist_id" domain="[('type','=','rental.year'),('currency_id','=',currency_id)]"/>
                         <field name="month_pricelist_id" domain="[('type','=','rental.month'),('currency_id','=',currency_id)]"/>
