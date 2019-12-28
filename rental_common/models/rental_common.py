@@ -760,6 +760,8 @@ class RentalCommon(models.AbstractModel):
         for upfront in self.upfront_cost_ids:
             line_ids.append((0, 0, upfront._prepare_invoice_line()))
 
+        name = self._get_upfront_invoice_description()
+
         return {
             "origin": self.name,
             "partner_id": self.partner_id.id,
@@ -770,6 +772,7 @@ class RentalCommon(models.AbstractModel):
             "currency_id": self.currency_id.id,
             "journal_id": journal.id,
             "invoice_line": line_ids,
+            "name": name,
         }
 
     @api.multi
@@ -790,6 +793,21 @@ class RentalCommon(models.AbstractModel):
             msg = _("Upfront cost unpaid!")
             raise UserError(msg)
         return True
+
+    @api.multi
+    def _get_upfront_invoice_description(self):
+        self.ensure_one()
+        type = self.type_id
+        if type.upfront_invoice_name_method == "default":
+            return self._get_default_upfront_invoice_description()
+        else:
+            return type._generate_upfront_invoice_description(self)
+
+    @api.multi
+    def _get_default_upfront_invoice_description(self):
+        self.ensure_one()
+        result = "Upfront invoice for # %s" % (self.name)
+        return result
 
     @api.model
     def create(self, values):

@@ -70,6 +70,19 @@ class RentalType(models.Model):
         comodel_name="account.account",
         company_dependent=True,
     )
+    upfront_invoice_name_method = fields.Selection(
+        string="Upfront Invoice Description Generation Method",
+        selection=[
+            ("default", "Default"),
+            ("code", "Python Code"),
+        ],
+        required=True,
+        default="default",
+    )
+    upfront_invoice_name_code = fields.Text(
+        string="Python Code for Upfront Invoice Description Generation",
+        default="result = True",
+    )
     rental_prepaid_receivable_journal_id = fields.Many2one(
         string="Rental Prepaid Journal",
         comodel_name="account.journal",
@@ -201,6 +214,18 @@ class RentalType(models.Model):
         localdict = self._get_localdict(document)
         try:
             eval(self.rental_invoice_name_code,
+                 localdict, mode="exec", nocopy=True)
+            result = localdict["result"]
+        except:  # noqa: E722
+            result = "/"
+        return result
+
+    @api.multi
+    def _generate_upfront_invoice_description(self, document):
+        self.ensure_one()
+        localdict = self._get_localdict(document)
+        try:
+            eval(self.upfront_invoice_name_code,
                  localdict, mode="exec", nocopy=True)
             result = localdict["result"]
         except:  # noqa: E722

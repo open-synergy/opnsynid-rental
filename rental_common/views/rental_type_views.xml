@@ -53,6 +53,10 @@
                         <field name="unfront_cost_journal_id" domain="[('type','=','sale')]"/>
                         <field name="unfront_cost_receivable_account_id" domain="[('type','=','receivable')]"/>
                     </group>
+                    <group name="upfront_4" colspan="4" col="2" string="Invoice Description">
+                        <field name="upfront_invoice_name_method"/>
+                        <field name="upfront_invoice_name_code" attrs="{'invisible':[('upfront_invoice_name_method','=','default')]}"/>
+                    </group>
                     <group name="upfront_2" colspan="4" col="2" string="Allowed Product Categories">
                         <field name="allowed_upfront_product_categ_ids" col="2" nolabel="1"/>
                     </group>
