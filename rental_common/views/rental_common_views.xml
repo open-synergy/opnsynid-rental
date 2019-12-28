@@ -71,8 +71,7 @@
                 <button name="action_done" type="object" string="Finish" class="oe_highlight" attrs="{'invisible':['|',('state','!=','open'),('done_ok','=',False)]}" confirm="Finish rental. Are you sure?"/>
                 <button name="%(base_print_policy.base_print_document_action)d" string="Print" type="action" icon="gtk-print"/>
                 <button name="%(base_cancel_reason.base_cancel_reason_wizard_action)d" type="action" string="Cancel" attrs="{'invisible':['|',('state','=','cancel'),('cancel_ok','=',False)]}" confirm="Cancel rental. Are you sure?"/>
-                <!-- TODO: tombol terminate hanyaa boleh muncul ketika state == In Progress-->
-                <button name="action_terminate" type="object" string="Terminate" attrs="{'invisible':['|',('state','=','open'),('terminate_ok','=',False)]}" confirm="Terminate rental. Are you sure?"/>
+                <button name="%(base_terminate_reason.base_terminate_reason_wizard_action)d" type="action" string="Terminate" attrs="{'invisible':['|',('state','!=','open'),('terminate_ok','=',False)]}" confirm="Terminate rental. Are you sure?"/>
                 <button name="action_restart" type="object" string="Restart" attrs="{'invisible':['|',('state','!=','cancel'),('restart_ok','=',False)]}" confirm="Restart rental. Are you sure?"/>
                 <field name="state" widget="statusbar" statusbar_visible="draft,confirm,approve,open"/>
             </header>
@@ -88,6 +87,10 @@
                         <h2 attrs="{'invisible': [('state', '!=', 'cancel')]}">
                             <label for="cancel_reason_id" string="Cancellation reason:"/>
                             <field name="cancel_reason_id" class="oe_inline"/>
+                        </h2>
+                        <h2 attrs="{'invisible': [('state', '!=', 'terminate')]}">
+                            <label for="terminate_reason_id" string="Termination reason:"/>
+                            <field name="terminate_reason_id" class="oe_inline"/>
                         </h2>
                     </div>
                 </div>

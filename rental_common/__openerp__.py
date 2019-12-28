@@ -12,6 +12,7 @@
         "base_sequence_configurator",
         "base_workflow_policy",
         "base_cancel_reason",
+        "base_terminate_reason",
         "base_print_policy",
         "mail",
         "product_prepaid_account",

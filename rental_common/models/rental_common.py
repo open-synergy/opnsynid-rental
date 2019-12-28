@@ -21,6 +21,7 @@ class RentalCommon(models.AbstractModel):
         "base.sequence_document",
         "base.workflow_policy_object",
         "base.cancel.reason_common",
+        "base.terminate.reason_common",
     ]
     _description = "Abstract Model for Rental"
 
