@@ -115,10 +115,10 @@
                             <field name="hour_period" class="oe_inline"/> Hour(s)
                         </div>
                         <field name="currency_id"/>
-                        <field name="year_pricelist_id" domain="[('type.key','=','rental.year'),('currency_id','=',currency_id)]"/>
-                        <field name="month_pricelist_id" domain="[('type.key','=','rental.month'),('currency_id','=',currency_id)]"/>
-                        <field name="day_pricelist_id" domain="[('type.key','=','rental.hour'),('currency_id','=',currency_id)]"/>
-                        <field name="hour_pricelist_id" domain="[('type.key','=','rental.day'),('currency_id','=',currency_id)]"/>
+                        <field name="year_pricelist_id" domain="[('type','=','rental.year'),('currency_id','=',currency_id)]"/>
+                        <field name="month_pricelist_id" domain="[('type','=','rental.month'),('currency_id','=',currency_id)]"/>
+                        <field name="day_pricelist_id" domain="[('type','=','rental.day'),('currency_id','=',currency_id)]"/>
+                        <field name="hour_pricelist_id" domain="[('type','=','rental.hour'),('currency_id','=',currency_id)]"/>
                         <field name="payment_term_id"/>
                     </group>
                 </group>
