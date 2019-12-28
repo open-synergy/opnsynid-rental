@@ -19,7 +19,7 @@
     <field name="name">rental.type tree</field>
     <field name="model">rental.type</field>
     <field name="arch" type="xml">
-        <tree create="false">
+        <tree create="false" delete="false">
             <field name="name"/>
             <field name="code"/>
         </tree>
@@ -30,7 +30,7 @@
     <field name="name">rental.type form</field>
     <field name="model">rental.type</field>
     <field name="arch" type="xml">
-        <form create="false">
+        <form create="false" delete="false">
             <header/>
             <div class="oe_right oe_button_box" style="width: 300px;" name="buttons"/>
             <group name="group_1" colspan="4" col="2">
@@ -91,7 +91,7 @@
                         <field name="rental_account_analytic_id"/>
                         <field name="create_analytic_ok"/>
                     </group>
-                </page>                        
+                </page>
                 <page name="workflow_policy" string="Workflow Policy">
                     <group name="workflow_policy_1" colspan="4" col="2">
                         <field name="rental_confirm_grp_ids" widget="many2many_tags"/>
