@@ -2,7 +2,8 @@
 # Copyright 2019 OpenSynergy Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models, fields
+from openerp import models, fields, api
+from openerp.tools.safe_eval import safe_eval as eval
 
 
 class RentalType(models.Model):
@@ -89,6 +90,19 @@ class RentalType(models.Model):
         comodel_name="account.account",
         company_dependent=True,
     )
+    rental_invoice_name_method = fields.Selection(
+        string="Rental Invoice Description Generation Method",
+        selection=[
+            ("default", "Default"),
+            ("code", "Python Code"),
+        ],
+        required=True,
+        default="default",
+    )
+    rental_invoice_name_code = fields.Text(
+        string="Python Code for Rental Invoice Description Generation",
+        default="result = True",
+    )
     recurring_journal_id = fields.Many2one(
         string="Recurring Journal",
         comodel_name="account.journal"
@@ -173,3 +187,22 @@ class RentalType(models.Model):
         column1="type_id",
         column2="group_id",
     )
+
+    def _get_localdict(self, document):
+        self.ensure_one()
+        return {
+            "env": self.env,
+            "document": document,
+        }
+
+    @api.multi
+    def _generate_rental_invoice_description(self, document):
+        self.ensure_one()
+        localdict = self._get_localdict(document)
+        try:
+            eval(self.rental_invoice_name_code,
+                 localdict, mode="exec", nocopy=True)
+            result = localdict["result"]
+        except:  # noqa: E722
+            result = "/"
+        return result

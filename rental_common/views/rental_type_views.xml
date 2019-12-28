@@ -73,6 +73,10 @@
                             <field name="rental_receivable_account_id" domain="[('type','=','receivable')]"/>
                         </group>
                     </group>
+                    <group name="rental_conf_2" colspan="4" col="2" string="Invoice Description">
+                        <field name="rental_invoice_name_method"/>
+                        <field name="rental_invoice_name_code" attrs="{'invisible':[('rental_invoice_name_method','=','default')]}"/>
+                    </group>
                 </page>
                 <page name="recurring_conf" string="Recurring Fee">
                     <group name="rental_conf_1" colspan="4" col="2" string="Accounting Configuration">

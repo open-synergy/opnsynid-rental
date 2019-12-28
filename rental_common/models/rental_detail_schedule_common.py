@@ -147,6 +147,8 @@ class RentalDetailScheduleCommon(models.AbstractModel):
                 "Journal Is Empty "
                 "Please Contact Administrator"))
 
+        name = self._get_invoice_description()
+
         rental = self.detail_id.rental_id
 
         return {
@@ -160,7 +162,26 @@ class RentalDetailScheduleCommon(models.AbstractModel):
             "company_id": self.detail_id.company_id.id,
             "currency_id": rental.currency_id.id,
             "journal_id": journal.id,
+            "name": name,
         }
+
+    @api.multi
+    def _get_invoice_description(self):
+        self.ensure_one()
+        type = self.detail_id.rental_id.type_id
+        if type.rental_invoice_name_method == "default":
+            return self._get_default_invoice_description()
+        else:
+            return type._generate_rental_invoice_description(self)
+
+    @api.multi
+    def _get_default_invoice_description(self):
+        self.ensure_one()
+        detail = self.detail_id
+        rental = detail.rental_id
+        period = dict(detail._fields["period"].selection).get(detail.period)
+        result = "%s invoice for # %s" % (period, rental.name)
+        return result
 
     @api.multi
     def _prepare_invoice_line(self, inv):
