@@ -49,7 +49,7 @@
                     </group>
                 </page>
                 <page name="upfront" string="Upfront Cost">
-                    <group name="upfront_1" colspan="4" col="2">
+                    <group name="upfront_1" colspan="4" col="2" string="Accounting Configuration">
                         <field name="unfront_cost_journal_id" domain="[('type','=','sale')]"/>
                         <field name="unfront_cost_receivable_account_id" domain="[('type','=','receivable')]"/>
                     </group>
@@ -60,20 +60,22 @@
                         <field name="allowed_upfront_product_ids" col="2" nolabel="1"/>
                     </group>
                 </page>
-                <page name="rental_conf" string="Rental Configuration">
-                    <group name="rental_conf_1" colspan="4" col="2">
-                      <field name="rental_journal_id"/>
-                      <field name="rental_account_id"/>
-                      <field name="rental_prepaid_receivable_journal_id" domain="[('type','=','sale')]"/>
-                      <field name="rental_prepaid_receivable_account_id" domain="[('type','=','receivable')]"/>
-                      <field name="rental_receivable_journal_id" domain="[('type','=','sale')]"/>
-                      <field name="rental_receivable_account_id" domain="[('type','=','receivable')]"/>
-                      <field name="rental_account_analytic_id"/>
-                      <field name="create_analytic_ok"/>
+                <page name="rental_conf" string="Invoicing">
+                    <group name="rental_conf_1" colspan="4" col="2" string="Accounting Configuration">
+                        <group name="rental_conf_1_1" colspan="1" col="2">
+                            <field name="rental_journal_id"/>
+                            <field name="rental_prepaid_receivable_journal_id" domain="[('type','=','sale')]"/>
+                            <field name="rental_receivable_journal_id" domain="[('type','=','sale')]"/>
+                        </group>
+                        <group name="rental_conf_1_2" colspan="1" col="2">
+                            <field name="rental_account_id"/>
+                            <field name="rental_prepaid_receivable_account_id" domain="[('type','=','receivable')]"/>
+                            <field name="rental_receivable_account_id" domain="[('type','=','receivable')]"/>
+                        </group>
                     </group>
                 </page>
-                <page name="recurring_conf" string="Recurring Configuration">
-                    <group name="rental_conf_1" colspan="4" col="2">
+                <page name="recurring_conf" string="Recurring Fee">
+                    <group name="rental_conf_1" colspan="4" col="2" string="Accounting Configuration">
                       <field name="recurring_journal_id"/>
                       <field name="recurring_account_id"/>
                     </group>
@@ -84,6 +86,12 @@
                         <field name="allowed_recurring_fee_product_ids" col="2" nolabel="1"/>
                     </group>
                 </page>
+                <page name="other_accounting" string="Other Accounting Configuration">
+                    <group name="other_accounting_1" colspan="4" col="2">
+                        <field name="rental_account_analytic_id"/>
+                        <field name="create_analytic_ok"/>
+                    </group>
+                </page>                        
                 <page name="workflow_policy" string="Workflow Policy">
                     <group name="workflow_policy_1" colspan="4" col="2">
                         <field name="rental_confirm_grp_ids" widget="many2many_tags"/>
