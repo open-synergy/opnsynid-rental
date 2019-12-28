@@ -133,8 +133,8 @@ class RentalUpfrontCostCommon(models.AbstractModel):
         account = self._get_invoice_line_account()
         if not account:
             raise UserError(_(
-                "Account Is Empty "
-                "Please Contact Administrator"))
+                "Upfron cost income account is not configured. \n "
+                "Please contact administrator"))
 
         return {
             "name": self.product_id.description_sale or self.product_id.name,

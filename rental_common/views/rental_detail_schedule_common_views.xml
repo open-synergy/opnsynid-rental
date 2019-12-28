@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 OpenSynergy Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<openerp>
+<data>
+<record id="rental_detail_schedule_common_view_search" model="ir.ui.view">
+    <field name="name">rental.detail_schedule_common form</field>
+    <field name="model">rental.detail_schedule_common</field>
+    <field name="arch" type="xml">
+        <search>
+            <field name="rental_id"/>
+            <field name="partner_id"/>
+            <field name="object_id"/>
+            <field name="rental_state"/>
+            <field name="state"/>
+            <group name="groupby" string="Group By..">
+                <filter name="grp_rental" string="# Rental" context="{'group_by':'rental_id'}"/>
+                <filter name="grp_partner" string="Partner" context="{'group_by':'partner_id'}"/>
+                <filter name="grp_object" string="Rental Object" context="{'group_by':'object_id'}"/>
+                <filter name="grp_date_year" string="Date Invoice by Year" context="{'group_by':'date:year'}"/>
+                <filter name="grp_date_month" string="Date Invoice by Month" context="{'group_by':'date:month'}"/>
+                <filter name="grp_date_week" string="Date Invoice by Week" context="{'group_by':'date:week'}"/>
+                <filter name="grp_date_day" string="Date Invoice by Day" context="{'group_by':'date:day'}"/>
+            </group>
+        </search>
+    </field>
+</record>
+
+<record id="rental_detail_schedule_common_view_tree" model="ir.ui.view">
+    <field name="name">rental.detail_schedule_common tree</field>
+    <field name="model">rental.detail_schedule_common</field>
+    <field name="arch" type="xml">
+        <tree create="false" delete="false">
+            <field name="rental_id"/>
+            <field name="partner_id"/>
+            <field name="object_id"/>
+            <field name="date"/>
+            <field name="amount"/>
+            <field name="amount_tax"/>
+            <field name="invoice_id"/>
+            <field name="rental_state"/>
+            <field name="state"/>
+        </tree>
+    </field>
+</record>
+
+<record id="rental_detail_schedule_common_view_form" model="ir.ui.view">
+    <field name="name">rental.detail_schedule_common form</field>
+    <field name="model">rental.detail_schedule_common</field>
+    <field name="arch" type="xml">
+        <form create="false" delete="false">
+            <header>
+                <field name="state" widget="statusbar"/>
+            </header>
+            <div class="oe_right oe_button_box" style="width: 300px;" name="buttons"/>
+            <group name="group_1" colspan="4" col="2">
+                <group name="group_1_1" colspan="1" col="2">
+                    <field name="rental_id"/>
+                    <field name="rental_state"/>
+                    <field name="object_id"/>
+                    <field name="partner_id"/>
+                    <field name="date"/>
+                </group>
+                <group name="group_1_2" colspan="1" col="2">
+                    <field name="amount"/>
+                    <field name="amount_tax"/>
+                    <field name="invoice_id"/>
+                </group>
+            </group>
+            <notebook/>
+        </form>
+    </field>
+</record>
+
+</data>
+</openerp>

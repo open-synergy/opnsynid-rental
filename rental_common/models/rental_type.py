@@ -2,7 +2,8 @@
 # Copyright 2019 OpenSynergy Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models, fields
+from openerp import models, fields, api
+from openerp.tools.safe_eval import safe_eval as eval
 
 
 class RentalType(models.Model):
@@ -16,13 +17,12 @@ class RentalType(models.Model):
     code = fields.Char(
         string="Code",
     )
-    rental_journal_id = fields.Many2one(
-        string="Rental Journal",
-        comodel_name="account.journal"
+    rental_account_analytic_id = fields.Many2one(
+        string="Parent Analytic Account",
+        comodel_name="account.analytic.account",
     )
-    rental_account_id = fields.Many2one(
-        string="Rental Account",
-        comodel_name="account.account"
+    create_analytic_ok = fields.Boolean(
+        string="Auto-Create Analytic Account",
     )
     allowed_upfront_product_ids = fields.Many2many(
         string="Allowed Upfront Products",
@@ -38,6 +38,20 @@ class RentalType(models.Model):
         column1="type_id",
         column2="category_id",
     )
+    allowed_recurring_fee_product_ids = fields.Many2many(
+        string="Allowed Recurring Fee Products",
+        comodel_name="product.product",
+        relation="rel_rental_type_2_recurring_fee_product",
+        column1="type_id",
+        column2="product_id",
+    )
+    allowed_recurring_fee_product_categ_ids = fields.Many2many(
+        string="Allowed Recurring Fee Product Categories",
+        comodel_name="product.category",
+        relation="rel_rental_type_2_recurring_fee_product_categ",
+        column1="type_id",
+        column2="category_id",
+    )
     unfront_cost_journal_id = fields.Many2one(
         string="Upfront Cost Receivable Journal",
         comodel_name="account.journal",
@@ -47,6 +61,19 @@ class RentalType(models.Model):
         string="Upfront Cost Receivable Account",
         comodel_name="account.account",
         company_dependent=True,
+    )
+    upfront_invoice_name_method = fields.Selection(
+        string="Upfront Invoice Description Generation Method",
+        selection=[
+            ("default", "Default"),
+            ("code", "Python Code"),
+        ],
+        required=True,
+        default="default",
+    )
+    upfront_invoice_name_code = fields.Text(
+        string="Python Code for Upfront Invoice Description Generation",
+        default="result = True",
     )
     rental_prepaid_receivable_journal_id = fields.Many2one(
         string="Rental Prepaid Journal",
@@ -68,6 +95,19 @@ class RentalType(models.Model):
         comodel_name="account.account",
         company_dependent=True,
     )
+    rental_invoice_name_method = fields.Selection(
+        string="Rental Invoice Description Generation Method",
+        selection=[
+            ("default", "Default"),
+            ("code", "Python Code"),
+        ],
+        required=True,
+        default="default",
+    )
+    rental_invoice_name_code = fields.Text(
+        string="Python Code for Rental Invoice Description Generation",
+        default="result = True",
+    )
     recurring_journal_id = fields.Many2one(
         string="Recurring Journal",
         comodel_name="account.journal"
@@ -75,6 +115,19 @@ class RentalType(models.Model):
     recurring_account_id = fields.Many2one(
         string="Recurring Account",
         comodel_name="account.account"
+    )
+    recurring_invoice_name_method = fields.Selection(
+        string="Recurring Invoice Description Generation Method",
+        selection=[
+            ("default", "Default"),
+            ("code", "Python Code"),
+        ],
+        required=True,
+        default="default",
+    )
+    recurring_invoice_name_code = fields.Text(
+        string="Python Code for Recurring Invoice Description Generation",
+        default="result = True",
     )
     active = fields.Boolean(
         string="Active",
@@ -152,3 +205,46 @@ class RentalType(models.Model):
         column1="type_id",
         column2="group_id",
     )
+
+    def _get_localdict(self, document):
+        self.ensure_one()
+        return {
+            "env": self.env,
+            "document": document,
+        }
+
+    @api.multi
+    def _generate_rental_invoice_description(self, document):
+        self.ensure_one()
+        localdict = self._get_localdict(document)
+        try:
+            eval(self.rental_invoice_name_code,
+                 localdict, mode="exec", nocopy=True)
+            result = localdict["result"]
+        except:  # noqa: E722
+            result = "/"
+        return result
+
+    @api.multi
+    def _generate_upfront_invoice_description(self, document):
+        self.ensure_one()
+        localdict = self._get_localdict(document)
+        try:
+            eval(self.upfront_invoice_name_code,
+                 localdict, mode="exec", nocopy=True)
+            result = localdict["result"]
+        except:  # noqa: E722
+            result = "/"
+        return result
+
+    @api.multi
+    def _generate_recurring_invoice_description(self, document):
+        self.ensure_one()
+        localdict = self._get_localdict(document)
+        try:
+            eval(self.recurring_invoice_name_code,
+                 localdict, mode="exec", nocopy=True)
+            result = localdict["result"]
+        except:  # noqa: E722
+            result = "/"
+        return result
