@@ -120,6 +120,7 @@
                         <field name="day_pricelist_id" domain="[('type','=','rental.day'),('currency_id','=',currency_id)]"/>
                         <field name="hour_pricelist_id" domain="[('type','=','rental.hour'),('currency_id','=',currency_id)]"/>
                         <field name="payment_term_id"/>
+                        <field name="account_analytic_id"/>
                     </group>
                 </group>
                 <notebook colspan="4">

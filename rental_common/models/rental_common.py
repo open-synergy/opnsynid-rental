@@ -162,6 +162,18 @@ class RentalCommon(models.AbstractModel):
         },
     )
 
+    account_analytic_id = fields.Many2one(
+        string="Analytic Account",
+        comodel_name="account.analytic.account",
+        required=False,
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+    )
+
     @api.model
     def _default_currency_id(self):
         return self.env.user.company_id.currency_id
@@ -567,6 +579,13 @@ class RentalCommon(models.AbstractModel):
         for document in self:
             if not document._check_availability():
                 raise UserError(msg)
+            if not document.account_analytic_id:
+                analytic_account_id =\
+                    document._create_analytic_account()
+                if analytic_account_id:
+                    document.write({
+                        "account_analytic_id": analytic_account_id.id
+                    })
             for detail in document.detail_ids:
                 detail._compute_schedule()
             for recurring in document.detail_ids:
@@ -609,6 +628,21 @@ class RentalCommon(models.AbstractModel):
     def _check_availability(self):
         self.ensure_one()
         result = True
+        return result
+
+    @api.multi
+    def _create_analytic_account(self):
+        self.ensure_one()
+        obj_analytic_account =\
+            self.env["account.analytic.account"]
+        result = False
+
+        type_id = self.type_id
+        if type_id.create_analytic_ok:
+            analytic_account_id = obj_analytic_account.create(
+                self._prepare_analytic_account()
+            )
+            result = analytic_account_id
         return result
 
     @api.multi
@@ -683,6 +717,17 @@ class RentalCommon(models.AbstractModel):
             "done_user_id": False,
             "cancel_date": False,
             "cancel_user_id": False,
+        }
+
+    @api.multi
+    def _prepare_analytic_account(self):
+        self.ensure_one()
+        type_id = self.type_id
+        parent = type_id.rental_account_analytic_id
+
+        return {
+            "parent_id": parent and parent.id or False,
+            "name": self.name,
         }
 
     @api.multi

@@ -166,11 +166,13 @@ class RentalDetailScheduleCommon(models.AbstractModel):
     def _prepare_invoice_line(self, inv):
         self.ensure_one()
 
+        rental = self.detail_id.rental_id
         account = self._get_invoice_detail_account()
-
+        analytic = rental.account_analytic_id
         return {
             "invoice_id": inv.id,
             "name": _("Rental"),
+            "account_analytic_id": analytic and analytic.id or False,
             'account_id': account.id,
             'product_id': self.detail_id.object_id.product_id.id,
             'uos_id': self.detail_id.uom_id.id,
@@ -178,5 +180,4 @@ class RentalDetailScheduleCommon(models.AbstractModel):
             'price_unit': self.amount,
             'invoice_line_tax_id': [(6, 0, self.detail_id.taxes_id.ids)],
             'discount': 0.0,
-            'account_analytic_id': False,
         }

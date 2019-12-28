@@ -24,6 +24,13 @@ class RentalType(models.Model):
         string="Rental Account",
         comodel_name="account.account"
     )
+    rental_account_analytic_id = fields.Many2one(
+        string="Parent Analytic Account",
+        comodel_name="account.analytic.account",
+    )
+    create_analytic_ok = fields.Boolean(
+        string="Auto-Create Analytic Account",
+    )
     allowed_upfront_product_ids = fields.Many2many(
         string="Allowed Upfront Products",
         comodel_name="product.product",

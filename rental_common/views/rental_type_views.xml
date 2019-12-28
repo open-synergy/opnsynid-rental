@@ -68,6 +68,8 @@
                       <field name="rental_prepaid_receivable_account_id" domain="[('type','=','receivable')]"/>
                       <field name="rental_receivable_journal_id" domain="[('type','=','sale')]"/>
                       <field name="rental_receivable_account_id" domain="[('type','=','receivable')]"/>
+                      <field name="rental_account_analytic_id"/>
+                      <field name="create_analytic_ok"/>
                     </group>
                 </page>
                 <page name="recurring_conf" string="Recurring Configuration">
