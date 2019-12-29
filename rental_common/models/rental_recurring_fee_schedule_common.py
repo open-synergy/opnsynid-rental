@@ -107,8 +107,8 @@ class RentalRecurringFeeScheduleCommon(models.AbstractModel):
         )
         if not account_id:
             raise UserError(_(
-                "Account Is Empty "
-                "Please Contact Administrator"))
+                "Recurring fee receivable account is not configured. \n "
+                "Please contact administrator"))
         # TO DO
         journal_id = (
             self.recurring_fee_id.type_id.recurring_journal_id.id or
@@ -116,8 +116,8 @@ class RentalRecurringFeeScheduleCommon(models.AbstractModel):
         )
         if not journal_id:
             raise UserError(_(
-                "Journal Is Empty "
-                "Please Contact Administrator"))
+                "Recurring sale journal is not configured. \n "
+                "Please contact administrator"))
 
         name = self._get_recurring_invoice_description()
 

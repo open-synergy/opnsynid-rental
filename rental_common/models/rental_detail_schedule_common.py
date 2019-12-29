@@ -138,14 +138,14 @@ class RentalDetailScheduleCommon(models.AbstractModel):
         account = self._get_receivable_account()
         if not account:
             raise UserError(_(
-                "Account Is Empty "
-                "Please Contact Administrator"))
+                "Receivable account is not configured. \n"
+                "Please contact administrator"))
 
         journal = self._get_receivable_journal()
         if not journal:
             raise UserError(_(
-                "Journal Is Empty "
-                "Please Contact Administrator"))
+                "Rental sale journal is not configured. \n"
+                "Please contact administrator"))
 
         name = self._get_invoice_description()
 

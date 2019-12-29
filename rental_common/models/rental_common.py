@@ -575,7 +575,7 @@ class RentalCommon(models.AbstractModel):
 
     @api.multi
     def action_confirm(self):
-        msg = _("Warning Message")
+        msg = _("Not available to rent")
         for document in self:
             if not document._check_availability():
                 raise UserError(msg)
@@ -748,14 +748,14 @@ class RentalCommon(models.AbstractModel):
         account = self._get_upfront_receivable_account()
         if not account:
             raise UserError(_(
-                "Account Is Empty "
-                "Please Contact Administrator"))
+                "Upfront receivable account is not configured. \n"
+                "Please contact administrator"))
 
         journal = self._get_upfront_receivable_journal()
         if not journal:
             raise UserError(_(
-                "Journal Is Empty "
-                "Please Contact Administrator"))
+                "Upfront invoice journal is not configured. \n "
+                "Please contact administrator"))
 
         for upfront in self.upfront_cost_ids:
             line_ids.append((0, 0, upfront._prepare_invoice_line()))
