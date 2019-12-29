@@ -119,6 +119,8 @@ class RentalRecurringFeeScheduleCommon(models.AbstractModel):
                 "Journal Is Empty "
                 "Please Contact Administrator"))
 
+        name = self._get_recurring_invoice_description()
+
         return {
             "origin": self.recurring_fee_id.detail_id.rental_id.name,
             "date_invoice": self.date,
@@ -130,6 +132,7 @@ class RentalRecurringFeeScheduleCommon(models.AbstractModel):
             "company_id": self.recurring_fee_id.company_id.id,
             "currency_id": self.recurring_fee_id.pricelist_id.currency_id.id,
             "journal_id": journal_id,
+            "name": name,
         }
 
     @api.multi
@@ -152,3 +155,22 @@ class RentalRecurringFeeScheduleCommon(models.AbstractModel):
             'discount': 0.0,
             'account_analytic_id': False,
         }
+
+    @api.multi
+    def _get_recurring_invoice_description(self):
+        self.ensure_one()
+        type = self.recurring_fee_id.detail_id.rental_id.type_id
+        if type.recurring_invoice_name_method == "default":
+            return self._get_default_recurring_invoice_description()
+        else:
+            return type._generate_recurring_invoice_description(self)
+
+    @api.multi
+    def _get_default_recurring_invoice_description(self):
+        self.ensure_one()
+        recurring = self.recurring_fee_id
+        rental = recurring.detail_id.rental_id
+        period = dict(recurring._fields["period"].selection).get(
+            recurring.period)
+        result = "%s recurring invoice for # %s" % (period, rental.name)
+        return result

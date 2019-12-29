@@ -139,6 +139,7 @@
                               'default_day_pricelist_id': day_pricelist_id,
                               'default_hour_pricelist_id': hour_pricelist_id,
                               'default_currency_id': currency_id,
+                              'defaault_type_id': type_id,
                               }">
                             <tree>
                                 <field name="object_id"/>
@@ -157,9 +158,10 @@
                                 </header>
                               <group name="group_2" colspan="4" col="2">
                                   <group name="group_2_1" string="Rental Object" colspan="1" col="2">
-                                    <field name="object_id" domain="[('rent_ok','=',True)]"/>
-                                    <field name="qty"/>
-                                    <field name="uom_id"/>
+                                      <field name="type_id"/>
+                                      <field name="object_id" domain="[('rent_ok','=',True)]"/>
+                                      <field name="qty"/>
+                                      <field name="uom_id"/>
                                   </group>
                                   <group colspan="1" col="6" string="Rental Price">
                                       <group name="group_2_1" colspan="6" col="2">
@@ -255,7 +257,7 @@
                                         </header>
                                         <group name="group_3" colspan="4" col="2">
                                             <group name="group_3_1" colspan="1" col="2">
-                                              <field name="type_id" invisible="1"/>
+                                              <field name="type_id" invisible="0"/>
                                               <field name="pricelist_id"/>
                                               <field name="allowed_product_ids" widget="many2many_tags" invisible="1"/>
                                               <field name="allowed_product_categ_ids" widget="many2many_tags" invisible="1"/>
@@ -273,7 +275,7 @@
                                         </group>
                                         <notebook colspan="4">
                                           <page name="schedule_recurring_fee" string="Schedule(s)">
-                                            <field name="recurring_fee_schedule_ids" colspan="4" nolabel="1">
+                                            <field name="recurring_fee_schedule_ids" colspan="4" nolabel="1" >
                                                 <tree create="false" edit="false" delete="false">
                                                     <field name="date"/>
                                                     <field name="amount"/>

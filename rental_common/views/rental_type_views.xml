@@ -83,14 +83,18 @@
                     </group>
                 </page>
                 <page name="recurring_conf" string="Recurring Fee">
-                    <group name="rental_conf_1" colspan="4" col="2" string="Accounting Configuration">
+                    <group name="recurring_conf_1" colspan="4" col="2" string="Accounting Configuration">
                       <field name="recurring_journal_id"/>
                       <field name="recurring_account_id"/>
                     </group>
-                    <group name="rental_conf_2" colspan="4" col="2" string="Allowed Product Categories">
+                    <group name="recurring_conf_2" colspan="4" col="2" string="Invoice Description">
+                        <field name="recurring_invoice_name_method"/>
+                        <field name="recurring_invoice_name_code" attrs="{'invisible':[('recurring_invoice_name_method','=','default')]}"/>
+                    </group>
+                    <group name="recurring_conf_3" colspan="4" col="2" string="Allowed Product Categories">
                         <field name="allowed_recurring_fee_product_categ_ids" col="2" nolabel="1"/>
                     </group>
-                    <group name="rental_conf_3" colspan="4" col="2" string="Allowed Product">
+                    <group name="recurring_conf_4" colspan="4" col="2" string="Allowed Product">
                         <field name="allowed_recurring_fee_product_ids" col="2" nolabel="1"/>
                     </group>
                 </page>

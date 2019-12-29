@@ -124,6 +124,19 @@ class RentalType(models.Model):
         string="Recurring Account",
         comodel_name="account.account"
     )
+    recurring_invoice_name_method = fields.Selection(
+        string="Recurring Invoice Description Generation Method",
+        selection=[
+            ("default", "Default"),
+            ("code", "Python Code"),
+        ],
+        required=True,
+        default="default",
+    )
+    recurring_invoice_name_code = fields.Text(
+        string="Python Code for Recurring Invoice Description Generation",
+        default="result = True",
+    )
     active = fields.Boolean(
         string="Active",
         default=True,
@@ -226,6 +239,18 @@ class RentalType(models.Model):
         localdict = self._get_localdict(document)
         try:
             eval(self.upfront_invoice_name_code,
+                 localdict, mode="exec", nocopy=True)
+            result = localdict["result"]
+        except:  # noqa: E722
+            result = "/"
+        return result
+
+    @api.multi
+    def _generate_recurring_invoice_description(self, document):
+        self.ensure_one()
+        localdict = self._get_localdict(document)
+        try:
+            eval(self.recurring_invoice_name_code,
                  localdict, mode="exec", nocopy=True)
             result = localdict["result"]
         except:  # noqa: E722
