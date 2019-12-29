@@ -285,9 +285,13 @@
                                                                 <field name="date"/>
                                                                 <field name="amount"/>
                                                                 <field name="amount_tax"/>
+                                                                <field name="invoice_id"/>
+                                                                <field name="manual"/>
                                                                 <field name="state"/>
                                                                 <field name="rental_state" invisible="1"/>
-                                                                <button name="action_create_invoice" string="Create Invoice" type="object" icon="gtk-execute" attrs="{'invisible':[('state','!=','draft'),('rental_state','!=','open')]}"/>
+                                                                <button name="action_uncontrol_schedule" string="Uncontrol Schedule" icon="gtk-no" type="object" attrs="{'invisible':['|','|',('invoice_id','!=',False),('manual','=',True),('rental_state','!=','open')]}"/>
+                                                                <button name="action_control_schedule" string="Control Schedule" icon="gtk-yes" type="object" attrs="{'invisible':['|','|',('manual','=',False),('rental_state','!=','open'),('rental_state','!=','open')]}"/>
+                                                                <button name="action_create_invoice" string="Create Invoice" type="object" icon="gtk-execute" attrs="{'invisible':['|','|',('invoice_id','!=',False),('rental_state','!=','open'),('manual','=',True)]}"/>
                                                             </tree>
                                                             <form create="false" edit="false" delete="false">
                                                                 <group name="form_recurring_fee_schedule_1" colspan="4" col="2">

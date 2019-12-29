@@ -16,6 +16,18 @@ class RentalRecurringFeeScheduleCommon(models.AbstractModel):
             document.rental_state = \
                 document.recurring_fee_id.detail_id.rental_id.state
 
+    @api.multi
+    def _compute_state(self):
+        for document in self:
+            state = "uninvoiced"
+            if document.manual:
+                state = "done"
+            elif document.invoice_id and document.invoice_id.state == "open":
+                state = "invoiced"
+            elif document.invoice_id and document.invoice_id.state == "paid":
+                state = "done"
+            document.state = state
+
     recurring_fee_id = fields.Many2one(
         string="Details",
         comodel_name="rental.recurring_fee_common",
@@ -58,14 +70,19 @@ class RentalRecurringFeeScheduleCommon(models.AbstractModel):
         compute="_compute_rental_state",
         store=False,
     )
+    manual = fields.Boolean(
+        string="Manually Controlled",
+        readonly=True,
+    )
     state = fields.Selection(
-        string="Invoice State",
+        string="State",
         selection=[
-            ("draft", "Draft"),
-            ("post", "Posted"),
+            ("uninvoiced", "Uninvoiced"),
+            ("invoiced", "Invoiced"),
+            ("done", "Paid/Done"),
         ],
-        required=True,
-        default="draft",
+        compute="_compute_state",
+        store=True,
     )
 
     @api.multi
@@ -73,11 +90,30 @@ class RentalRecurringFeeScheduleCommon(models.AbstractModel):
         for document in self:
             inv = document._create_invoice()
             inv.button_reset_taxes()
-            document.write({
-                "state": "post",
-            })
-            # if document.detail_id._check_done():
-            #     document.detail_id.action_done()
+
+    @api.multi
+    def action_uncontrol_schedule(self):
+        for document in self:
+            document.write(document._prepare_uncontrol_schedule())
+
+    @api.multi
+    def action_control_schedule(self):
+        for document in self:
+            document.write(document._prepare_control_schedule())
+
+    @api.multi
+    def _prepare_uncontrol_schedule(self):
+        self.ensure_one()
+        return {
+            "manual": True,
+        }
+
+    @api.multi
+    def _prepare_control_schedule(self):
+        self.ensure_one()
+        return {
+            "manual": False,
+        }
 
     @api.multi
     def _create_invoice(self):
