@@ -24,6 +24,7 @@ class RentalCommon(models.AbstractModel):
         "base.terminate.reason_common",
     ]
     _description = "Abstract Model for Rental"
+    _rental_invoice_schedule_model = "rental.detail_schedule_common"
 
     @api.model
     def _default_company_id(self):
@@ -828,3 +829,18 @@ class RentalCommon(models.AbstractModel):
                     raise UserError(strWarning)
         _super = super(RentalCommon, self)
         _super.unlink()
+
+    @api.constrains(
+        "state",
+    )
+    def _check_schedule_state(self):
+        warning_msg = _("Schedule has to be paid/done")
+        obj_schedule = self.env[self._rental_invoice_schedule_model]
+        for document in self:
+            criteria = [
+                ("detail_id.rental_id", "=", document.id),
+                ("state", "!=", "done"),
+            ]
+            unfinish_count = obj_schedule.search_count(criteria)
+            if document.state == "done" and unfinish_count != 0:
+                raise UserError(warning_msg)

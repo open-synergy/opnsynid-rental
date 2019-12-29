@@ -3,8 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from datetime import datetime
-from openerp import models, fields, api, _
-from openerp.exceptions import Warning as UserError
+from openerp import models, fields, api
 import openerp.addons.decimal_precision as dp
 import logging
 

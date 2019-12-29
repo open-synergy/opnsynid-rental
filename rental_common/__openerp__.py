@@ -24,5 +24,6 @@
         "views/rental_type_views.xml",
         "views/rental_common_views.xml",
         "views/rental_detail_common_views.xml",
+        "views/rental_detail_schedule_common_views.xml",
     ],
 }
