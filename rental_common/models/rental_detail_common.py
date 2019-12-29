@@ -88,21 +88,6 @@ class RentalDetailCommon(models.AbstractModel):
         related="rental_id.fiscal_position_id",
         readonly=True,
     )
-
-    @api.model
-    def _default_pricelist_id(self):
-        pricelist_id =\
-            self.env.context.get(
-                "pricelist_id", False)
-        if pricelist_id:
-            return pricelist_id
-
-    pricelist_id = fields.Many2one(
-        string="Pricelist",
-        comodel_name="product.pricelist",
-        required=False,
-        default=lambda self: self._default_pricelist_id(),
-    )
     year_pricelist_id = fields.Many2one(
         string="Yearly Pricelist",
         comodel_name="product.pricelist",
@@ -305,15 +290,6 @@ class RentalDetailCommon(models.AbstractModel):
         compute="_compute_rental_state",
         store=False,
     )
-
-    @api.constrains("pricelist_id")
-    def check_pricelist_id(self):
-        if self.pricelist_id:
-            if self.rental_id.pricelist_id.currency_id != \
-                    self.pricelist_id.currency_id:
-                raise UserError(_(
-                    "Currency on Details must be equal to the "
-                    "Currency on Header"))
 
     @api.multi
     @api.onchange(
