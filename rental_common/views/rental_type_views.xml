@@ -67,12 +67,10 @@
                 <page name="rental_conf" string="Invoicing">
                     <group name="rental_conf_1" colspan="4" col="2" string="Accounting Configuration">
                         <group name="rental_conf_1_1" colspan="1" col="2">
-                            <field name="rental_journal_id"/>
                             <field name="rental_prepaid_receivable_journal_id" domain="[('type','=','sale')]"/>
                             <field name="rental_receivable_journal_id" domain="[('type','=','sale')]"/>
                         </group>
                         <group name="rental_conf_1_2" colspan="1" col="2">
-                            <field name="rental_account_id"/>
                             <field name="rental_prepaid_receivable_account_id" domain="[('type','=','receivable')]"/>
                             <field name="rental_receivable_account_id" domain="[('type','=','receivable')]"/>
                         </group>

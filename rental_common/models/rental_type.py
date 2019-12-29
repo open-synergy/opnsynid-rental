@@ -17,14 +17,6 @@ class RentalType(models.Model):
     code = fields.Char(
         string="Code",
     )
-    rental_journal_id = fields.Many2one(
-        string="Rental Journal",
-        comodel_name="account.journal"
-    )
-    rental_account_id = fields.Many2one(
-        string="Rental Account",
-        comodel_name="account.account"
-    )
     rental_account_analytic_id = fields.Many2one(
         string="Parent Analytic Account",
         comodel_name="account.analytic.account",
