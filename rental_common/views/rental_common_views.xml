@@ -324,6 +324,7 @@
                     </page>
                     <page name="upfront_cost" string="Upfront Cost">
                         <group name="upfront_cost_1" colspan="4" col="2">
+                            <field name="manual_upfront"/>
                             <field name="upfront_invoice_id"/>
                         </group>
                         <field name="upfront_cost_ids" nolabel="1" context="{'default_type_id':type_id}">

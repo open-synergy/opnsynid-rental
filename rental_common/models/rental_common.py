@@ -335,6 +335,16 @@ class RentalCommon(models.AbstractModel):
         readonly=True,
         ondelete="restrict",
     )
+    manual_upfront = fields.Boolean(
+        string="Manual Control of Upfront Invoice",
+        default=False,
+        readonly=False,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+    )
     note = fields.Text(
         string="Note",
     )
@@ -779,7 +789,7 @@ class RentalCommon(models.AbstractModel):
     @api.multi
     def _create_upfront_invoice(self):
         self.ensure_one()
-        if not self.upfront_cost_ids:
+        if not self.upfront_cost_ids or self.manual_upfront:
             return False
 
         obj_invoice = self.env["account.invoice"]
