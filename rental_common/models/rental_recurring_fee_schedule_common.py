@@ -136,6 +136,23 @@ class RentalRecurringFeeScheduleCommon(models.AbstractModel):
         }
 
     @api.multi
+    def _get_line_account(self):
+        self.ensure_one()
+        recurring = self.recurring_fee_id
+        product = recurring.product_id
+
+        account = product.categ_id.property_account_income_categ
+
+        if not account:
+            account = product.property_income_account
+
+        error_msg = _("Recurring product %s income account "
+                      "is not configured. \n"
+                      "Please contact administrator."
+                      ) % (product.display_name)
+        raise UserError(error_msg)
+
+    @api.multi
     def _prepare_invoice_line(self, inv):
         self.ensure_one()
 
