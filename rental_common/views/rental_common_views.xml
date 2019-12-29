@@ -162,45 +162,47 @@
                                         <field name="object_id" domain="[('rent_ok','=',True)]"/>
                                         <field name="qty"/>
                                         <field name="uom_id"/>
-                                    </group>
-                                    <group colspan="1" col="6" string="Rental Price">
-                                        <group name="group_2_1" colspan="6" col="2">
-                                            <field name="currency_id"/>
-                                        </group>
-                                        <field name="year_pricelist_id" string="Yearly Price" domain="[('type','=','rental.year'),('currency_id','=',currency_id)]"/>
-                                        <field name="year_period" nolabel="1"/>
-                                        <div>
-                                            Year(s)
-                                        </div>
-                                        <field name="year_price_unit" nolabel="1"/>
-                                        <field name="year_price_subtotal" nolabel="1"/>
-                                        <field name="month_pricelist_id" string="Monthly Price" domain="[('type','=','rental.month'),('currency_id','=',currency_id)]"/>
-                                        <field name="month_period" nolabel="1"/>
-                                        <div>
-                                            Month(s)
-                                        </div>
-                                        <field name="month_price_unit" nolabel="1"/>
-                                        <field name="month_price_subtotal" nolabel="1"/>
-                                        <field name="day_pricelist_id" string="Daily Price" domain="[('type','=','rental.day'),('currency_id','=',currency_id)]"/>
-                                        <field name="day_period" nolabel="1"/>
-                                        <div>
-                                            Day(s)
-                                        </div>
-                                        <field name="day_price_unit" nolabel="1"/>
-                                        <field name="day_price_subtotal" nolabel="1"/>
-                                        <field name="hour_pricelist_id" string="Hourly Price" domain="[('type','=','rental.day'),('currency_id','=',currency_id)]"/>
-                                        <field name="hour_period" nolabel="1"/>
-                                        <div>
-                                            Hour(s)
-                                        </div>
-                                        <field name="hour_price_unit" nolabel="1"/>
-                                        <field name="hour_price_subtotal" nolabel="1"/>
-                                        <group colspan="4" col="2">
-                                            <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','sale')]" context="{'default_type_tax_use': 'sale'}" options="{'no_create': True}"/>
-                                        </group>
-                                    </group>
+                                    </group>>
                                 </group>
                                 <notebook colspan="4">
+                                    <page name="rental_price" string="Rental Price">
+                                        <group colspan="4" col="6">
+                                            <group name="group_2_1" colspan="6" col="2">
+                                                <field name="currency_id"/>
+                                            </group>
+                                            <field name="year_pricelist_id" string="Yearly Price" domain="[('type','=','rental.year'),('currency_id','=',currency_id)]"/>
+                                            <field name="year_period" nolabel="1"/>
+                                            <div>
+                                                Year(s)
+                                            </div>
+                                            <field name="year_price_unit" nolabel="1"/>
+                                            <field name="year_price_subtotal" nolabel="1"/>
+                                            <field name="month_pricelist_id" string="Monthly Price" domain="[('type','=','rental.month'),('currency_id','=',currency_id)]"/>
+                                            <field name="month_period" nolabel="1"/>
+                                            <div>
+                                                Month(s)
+                                            </div>
+                                            <field name="month_price_unit" nolabel="1"/>
+                                            <field name="month_price_subtotal" nolabel="1"/>
+                                            <field name="day_pricelist_id" string="Daily Price" domain="[('type','=','rental.day'),('currency_id','=',currency_id)]"/>
+                                            <field name="day_period" nolabel="1"/>
+                                            <div>
+                                                Day(s)
+                                            </div>
+                                            <field name="day_price_unit" nolabel="1"/>
+                                            <field name="day_price_subtotal" nolabel="1"/>
+                                            <field name="hour_pricelist_id" string="Hourly Price" domain="[('type','=','rental.day'),('currency_id','=',currency_id)]"/>
+                                            <field name="hour_period" nolabel="1"/>
+                                            <div>
+                                                Hour(s)
+                                            </div>
+                                            <field name="hour_price_unit" nolabel="1"/>
+                                            <field name="hour_price_subtotal" nolabel="1"/>
+                                            <group colspan="4" col="2">
+                                                <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','sale')]" context="{'default_type_tax_use': 'sale'}" options="{'no_create': True}"/>
+                                            </group>
+                                        </group>
+                                    </page>
                                     <page name="schedule" string="Schedule(s)">
                                         <group name="schedule1" colspan="4" col="2">
                                             <field name="date_start"/>
