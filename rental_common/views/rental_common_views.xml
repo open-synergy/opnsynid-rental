@@ -156,164 +156,163 @@
                                     <button name="action_compute_schedule" type="object" string="Create Schedule" icon="gtk-execute" attrs="{'invisible':[('rental_state','!=','draft')]}"/>
                                     <field name="rental_state" widget="statusbar" statusbar_visible="draft,confirm,approve,open"/>
                                 </header>
-                              <group name="group_2" colspan="4" col="2">
-                                  <group name="group_2_1" string="Rental Object" colspan="1" col="2">
-                                      <field name="type_id"/>
-                                      <field name="object_id" domain="[('rent_ok','=',True)]"/>
-                                      <field name="qty"/>
-                                      <field name="uom_id"/>
-                                  </group>
-                                  <group colspan="1" col="6" string="Rental Price">
-                                      <group name="group_2_1" colspan="6" col="2">
-                                          <field name="currency_id"/>
-                                      </group>
-                                      <field name="year_pricelist_id" string="Yearly Price" domain="[('type','=','rental.year'),('currency_id','=',currency_id)]"/>
-                                      <field name="year_period" nolabel="1"/>
-                                      <div>
-                                          Year(s)
-                                      </div>
-                                      <field name="year_price_unit" nolabel="1"/>
-                                      <field name="year_price_subtotal" nolabel="1"/>
-                                      <field name="month_pricelist_id" string="Monthly Price" domain="[('type','=','rental.month'),('currency_id','=',currency_id)]"/>
-                                      <field name="month_period" nolabel="1"/>
-                                      <div>
-                                          Month(s)
-                                      </div>
-                                      <field name="month_price_unit" nolabel="1"/>
-                                      <field name="month_price_subtotal" nolabel="1"/>
-                                      <field name="day_pricelist_id" string="Daily Price" domain="[('type','=','rental.day'),('currency_id','=',currency_id)]"/>
-                                      <field name="day_period" nolabel="1"/>
-                                      <div>
-                                          Day(s)
-                                      </div>
-                                      <field name="day_price_unit" nolabel="1"/>
-                                      <field name="day_price_subtotal" nolabel="1"/>
-                                      <field name="hour_pricelist_id" string="Hourly Price" domain="[('type','=','rental.day'),('currency_id','=',currency_id)]"/>
-                                      <field name="hour_period" nolabel="1"/>
-                                      <div>
-                                          Hour(s)
-                                      </div>
-                                      <field name="hour_price_unit" nolabel="1"/>
-                                      <field name="hour_price_subtotal" nolabel="1"/>
-                                      <group colspan="4" col="2">
-                                          <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','sale')]" context="{'default_type_tax_use': 'sale'}" options="{'no_create': True}"/>
-                                      </group>
-                                  </group>
-                              </group>
-                              <notebook colspan="4">
-                                <page name="schedule" string="Schedule(s)">
-                                    <group name="schedule1" colspan="4" col="2">
-                                      <field name="date_start"/>
-                                      <field name="period"/>
-                                      <field name="period_number"/>
-                                      <field name="invoice_schedule_method"/>
-                                    </group>
-                                  <field name="schedule_ids" colspan="4" nolabel="1">
-                                      <tree create="false" edit="false" delete="false">
-                                          <field name="date"/>
-                                          <field name="amount"/>
-                                          <field name="amount_tax"/>
-                                          <field name="state"/>
-                                          <field name="rental_state" invisible="1"/>
-                                          <!-- TODO: Tombol muncul ketika status rental (1) In Progress, atau (2) Done, atau (3) Terminate -->
-                                          <button name="action_create_invoice" string="Create Invoice" type="object" icon="gtk-execute" attrs="{'invisible':['|',('state','!=','draft'),('rental_state','!=','open')]}"/>
-                                      </tree>
-                                      <form create="false" edit="false" delete="false">
-                                          <group name="form_schedule_1" colspan="4" col="2">
-                                              <field name="date"/>
-                                              <field name="amount"/>
-                                              <field name="invoice_id"/>
-                                              <field name="invoice_line_id"/>
-                                              <field name="state"/>
-                                          </group>
-                                      </form>
-                                  </field>
-                                  <group class="oe_subtotal_footer oe_right">
-                                      <field name="price_subtotal"/>
-                                      <field name="price_tax"/>
-                                      <div class="oe_subtotal_footer_separator oe_inline">
-                                          <label for="price_total"/>
-                                      </div>
-                                      <field name="price_total" nolabel="1" class="oe_subtotal_footer_separator" />
-                                  </group>
-                                </page>
-                                <page name="recurring_fee" string="Recurring Fees">
-                                  <field name="recurring_fee_ids" colspan="4" nolabel="1" context="{'default_type_id':type_id}">
-                                      <tree>
-                                        <field name="sequence" widget="handle"/>
-                                        <field name="type_id" invisible="1"/>
-                                        <field name="product_id"/>
+                                <group name="group_2" colspan="4" col="2">
+                                    <group name="group_2_1" string="Rental Object" colspan="1" col="2">
+                                        <field name="type_id"/>
+                                        <field name="object_id" domain="[('rent_ok','=',True)]"/>
                                         <field name="qty"/>
                                         <field name="uom_id"/>
-                                        <field name="price_unit"/>
-                                        <field name="price_subtotal"/>
-                                        <field name="period"/>
-                                        <field name="period_number"/>
-                                      </tree>
-                                      <form string="Details">
-                                        <header>
-                                          <button name="action_compute_schedule" type="object" string="Create Schedule" icon="gtk-execute" attrs="{'invisible':[('rental_state','!=','draft')]}"/>
-                                          <field name="rental_state" widget="statusbar" statusbar_visible="draft,confirm,approve,open"/>
-                                        </header>
-                                        <group name="group_3" colspan="4" col="2">
-                                            <group name="group_3_1" colspan="1" col="2">
-                                              <field name="type_id" invisible="0"/>
-                                              <field name="pricelist_id"/>
-                                              <field name="allowed_product_ids" widget="many2many_tags" invisible="1"/>
-                                              <field name="allowed_product_categ_ids" widget="many2many_tags" invisible="1"/>
-                                              <field name="product_id" domain="['|',('id','in',allowed_product_ids[0][2]),('categ_id','in',allowed_product_categ_ids[0][2])]"/>
-                                              <field name="qty"/>
-                                              <field name="uom_id"/>
-                                              <field name="price_unit"/>
-                                              <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','sale')]" context="{'default_type_tax_use': 'sale'}" options="{'no_create': True}"/>
-                                            </group>
-                                            <group string="Invoicing" name="group_3_2" colspan="1" col="2">
-                                              <field name="date_start"/>
-                                              <field name="period"/>
-                                              <field name="period_number"/>
-                                            </group>
+                                    </group>
+                                    <group colspan="1" col="6" string="Rental Price">
+                                        <group name="group_2_1" colspan="6" col="2">
+                                            <field name="currency_id"/>
                                         </group>
-                                        <notebook colspan="4">
-                                          <page name="schedule_recurring_fee" string="Schedule(s)">
-                                            <field name="recurring_fee_schedule_ids" colspan="4" nolabel="1" >
-                                                <tree create="false" edit="false" delete="false">
+                                        <field name="year_pricelist_id" string="Yearly Price" domain="[('type','=','rental.year'),('currency_id','=',currency_id)]"/>
+                                        <field name="year_period" nolabel="1"/>
+                                        <div>
+                                            Year(s)
+                                        </div>
+                                        <field name="year_price_unit" nolabel="1"/>
+                                        <field name="year_price_subtotal" nolabel="1"/>
+                                        <field name="month_pricelist_id" string="Monthly Price" domain="[('type','=','rental.month'),('currency_id','=',currency_id)]"/>
+                                        <field name="month_period" nolabel="1"/>
+                                        <div>
+                                            Month(s)
+                                        </div>
+                                        <field name="month_price_unit" nolabel="1"/>
+                                        <field name="month_price_subtotal" nolabel="1"/>
+                                        <field name="day_pricelist_id" string="Daily Price" domain="[('type','=','rental.day'),('currency_id','=',currency_id)]"/>
+                                        <field name="day_period" nolabel="1"/>
+                                        <div>
+                                            Day(s)
+                                        </div>
+                                        <field name="day_price_unit" nolabel="1"/>
+                                        <field name="day_price_subtotal" nolabel="1"/>
+                                        <field name="hour_pricelist_id" string="Hourly Price" domain="[('type','=','rental.day'),('currency_id','=',currency_id)]"/>
+                                        <field name="hour_period" nolabel="1"/>
+                                        <div>
+                                            Hour(s)
+                                        </div>
+                                        <field name="hour_price_unit" nolabel="1"/>
+                                        <field name="hour_price_subtotal" nolabel="1"/>
+                                        <group colspan="4" col="2">
+                                            <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','sale')]" context="{'default_type_tax_use': 'sale'}" options="{'no_create': True}"/>
+                                        </group>
+                                    </group>
+                                </group>
+                                <notebook colspan="4">
+                                    <page name="schedule" string="Schedule(s)">
+                                        <group name="schedule1" colspan="4" col="2">
+                                            <field name="date_start"/>
+                                            <field name="period"/>
+                                            <field name="period_number"/>
+                                            <field name="invoice_schedule_method"/>
+                                        </group>
+                                        <field name="schedule_ids" colspan="4" nolabel="1">
+                                            <tree create="false" edit="false" delete="false">
+                                                <field name="date"/>
+                                                <field name="amount"/>
+                                                <field name="amount_tax"/>
+                                                <field name="state"/>
+                                                <field name="rental_state" invisible="1"/>
+                                                <button name="action_create_invoice" string="Create Invoice" type="object" icon="gtk-execute" attrs="{'invisible':['|',('state','!=','draft'),('rental_state','!=','open')]}"/>
+                                            </tree>
+                                            <form create="false" edit="false" delete="false">
+                                                <group name="form_schedule_1" colspan="4" col="2">
                                                     <field name="date"/>
                                                     <field name="amount"/>
-                                                    <field name="amount_tax"/>
+                                                    <field name="invoice_id"/>
+                                                    <field name="invoice_line_id"/>
                                                     <field name="state"/>
-                                                    <field name="rental_state" invisible="1"/>
-                                                    <button name="action_create_invoice" string="Create Invoice" type="object" icon="gtk-execute" attrs="{'invisible':['|',('state','!=','draft'),('rental_state','!=','open')]}"/>
-                                                </tree>
-                                                <form create="false" edit="false" delete="false">
-                                                    <group name="form_recurring_fee_schedule_1" colspan="4" col="2">
-                                                        <field name="date"/>
-                                                        <field name="amount"/>
-                                                        <field name="invoice_id"/>
-                                                        <field name="invoice_line_id"/>
-                                                        <field name="state"/>
-                                                    </group>
-                                                </form>
-                                            </field>
-                                            <group class="oe_subtotal_footer oe_right">
+                                                </group>
+                                            </form>
+                                        </field>
+                                        <group class="oe_subtotal_footer oe_right">
+                                            <field name="price_subtotal"/>
+                                            <field name="price_tax"/>
+                                            <div class="oe_subtotal_footer_separator oe_inline">
+                                                <label for="price_total"/>
+                                            </div>
+                                            <field name="price_total" nolabel="1" class="oe_subtotal_footer_separator" />
+                                        </group>
+                                    </page>
+                                    <page name="recurring_fee" string="Recurring Fees">
+                                        <field name="recurring_fee_ids" colspan="4" nolabel="1" context="{'default_type_id':type_id}">
+                                            <tree>
+                                                <field name="sequence" widget="handle"/>
+                                                <field name="type_id" invisible="1"/>
+                                                <field name="product_id"/>
+                                                <field name="qty"/>
+                                                <field name="uom_id"/>
+                                                <field name="price_unit"/>
                                                 <field name="price_subtotal"/>
-                                                <field name="price_tax"/>
-                                                <div class="oe_subtotal_footer_separator oe_inline">
-                                                    <label for="price_total"/>
-                                                </div>
-                                                <field name="price_total" nolabel="1" class="oe_subtotal_footer_separator" />
-                                            </group>
-                                          </page>
-                                        </notebook>
-                                      </form>
-                                  </field>
-                                </page>
-                                <page name="other_info" string="Other Info">
-                                    <group name="other_info_1" colspan="4" col="2">
-                                      <field name="date_handover"/>
-                                      <field name="fitting_out"/>
-                                    </group>
-                                </page>
-                              </notebook>
+                                                <field name="period"/>
+                                                <field name="period_number"/>
+                                            </tree>
+                                            <form string="Details">
+                                                <header>
+                                                    <button name="action_compute_schedule" type="object" string="Create Schedule" icon="gtk-execute" attrs="{'invisible':[('rental_state','!=','draft')]}"/>
+                                                    <field name="rental_state" widget="statusbar" statusbar_visible="draft,confirm,approve,open"/>
+                                                </header>
+                                                <group name="group_3" colspan="4" col="2">
+                                                    <group name="group_3_1" colspan="1" col="2">
+                                                        <field name="type_id" invisible="0"/>
+                                                        <field name="pricelist_id"/>
+                                                        <field name="allowed_product_ids" widget="many2many_tags" invisible="1"/>
+                                                        <field name="allowed_product_categ_ids" widget="many2many_tags" invisible="1"/>
+                                                        <field name="product_id" domain="['|',('id','in',allowed_product_ids[0][2]),('categ_id','in',allowed_product_categ_ids[0][2])]"/>
+                                                        <field name="qty"/>
+                                                        <field name="uom_id"/>
+                                                        <field name="price_unit"/>
+                                                        <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','sale')]" context="{'default_type_tax_use': 'sale'}" options="{'no_create': True}"/>
+                                                    </group>
+                                                    <group string="Invoicing" name="group_3_2" colspan="1" col="2">
+                                                        <field name="date_start"/>
+                                                        <field name="period"/>
+                                                        <field name="period_number"/>
+                                                    </group>
+                                                </group>
+                                                <notebook colspan="4">
+                                                    <page name="schedule_recurring_fee" string="Schedule(s)">
+                                                        <field name="recurring_fee_schedule_ids" colspan="4" nolabel="1" >
+                                                            <tree create="false" edit="false" delete="false">
+                                                                <field name="date"/>
+                                                                <field name="amount"/>
+                                                                <field name="amount_tax"/>
+                                                                <field name="state"/>
+                                                                <field name="rental_state" invisible="1"/>
+                                                                <button name="action_create_invoice" string="Create Invoice" type="object" icon="gtk-execute" attrs="{'invisible':['|',('state','!=','draft'),('rental_state','!=','open')]}"/>
+                                                            </tree>
+                                                            <form create="false" edit="false" delete="false">
+                                                                <group name="form_recurring_fee_schedule_1" colspan="4" col="2">
+                                                                    <field name="date"/>
+                                                                    <field name="amount"/>
+                                                                    <field name="invoice_id"/>
+                                                                    <field name="invoice_line_id"/>
+                                                                    <field name="state"/>
+                                                                </group>
+                                                            </form>
+                                                        </field>
+                                                        <group class="oe_subtotal_footer oe_right">
+                                                            <field name="price_subtotal"/>
+                                                            <field name="price_tax"/>
+                                                            <div class="oe_subtotal_footer_separator oe_inline">
+                                                                <label for="price_total"/>
+                                                            </div>
+                                                            <field name="price_total" nolabel="1" class="oe_subtotal_footer_separator" />
+                                                        </group>
+                                                    </page>
+                                                </notebook>
+                                            </form>
+                                        </field>
+                                    </page>
+                                    <page name="other_info" string="Other Info">
+                                        <group name="other_info_1" colspan="4" col="2">
+                                            <field name="date_handover"/>
+                                            <field name="fitting_out"/>
+                                        </group>
+                                    </page>
+                                </notebook>
                             </form>
                         </field>
                     </page>
