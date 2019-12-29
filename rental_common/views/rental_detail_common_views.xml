@@ -68,6 +68,7 @@
           <group name="group_2" colspan="4" col="2">
               <group name="group_2_1" string="Rental Object" colspan="1" col="2">
                   <field name="rental_id"/>
+                  <field name="type_id" invisible="1"/>
                   <field name="object_id"/>
                   <field name="rental_date_start"/>
                   <field name="rental_date_end"/>
