@@ -2,6 +2,7 @@
 # Copyright 2019 OpenSynergy Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from datetime import datetime
 from openerp import models, fields, api, _
 from openerp.exceptions import Warning as UserError
 
@@ -202,3 +203,15 @@ class RentalDetailScheduleCommon(models.AbstractModel):
             'invoice_line_tax_id': [(6, 0, self.detail_id.taxes_id.ids)],
             'discount': 0.0,
         }
+
+    @api.model
+    def run_create_invoice(self):
+        date_now =\
+            datetime.now().strftime("%Y-%m-%d")
+        criteria = [
+            ("date", "=", date_now),
+            ("rental_state", "=" "open"),
+        ]
+        schedules = self.search(criteria)
+        if len(schedules) > 0:
+            schedules.action_create_invoice()
